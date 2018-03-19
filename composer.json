@@ -1,7 +1,7 @@
 {
-    "name": "cradlephp/cradle-profile",
+    "name": "cradlephp/cradle-auth",
     "type": "cradle-package",
-    "description": "Profile Schema for CradlePHP",
+    "description": "Auth Schema for CradlePHP",
     "minimum-stability": "dev",
     "keywords": [
         "cradle",
