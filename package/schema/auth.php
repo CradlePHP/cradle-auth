@@ -130,6 +130,11 @@ return [
             'sortable' => '1'
         ]
     ],
-    'relations' => [],
-    'suggestion' => '{{profile_name}}'
+    'relations' => [
+        [
+            'many' => '1',
+            'name' => 'profile'
+        ]
+    ],
+    'suggestion' => '{{auth_slug}}'
 ];
