@@ -21,5 +21,10 @@
     },
     "require": {
         "cradlephp/cradle-system": "0.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cradle\\Package\\Auth\\": "cradlephp/cradle-auth/src/"
+        }
     }
 }
