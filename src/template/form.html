@@ -1,0 +1,65 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="/admin">
+                <i class="fas fa-home"></i> Admin
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="/admin/user/search">
+                <i class="fas fa-lock"></i> Auth
+            </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            <i class="fas fa-plus"></i> {{title}}
+        </li>
+    </ol>
+</nav>
+
+<div class="main-padding">
+    <form
+        class="box"
+        method="post"
+    >
+        <div class="box-head box-success">
+            <div class="box-title">
+                <i class="fa fa-plus"></i> {{title}}
+            </div>
+        </div>
+        <div class="box-body box-padding">
+            <div class="form-group{{#if errors.auth_slug}} has-error{{/if}}">
+                <label class="control-label">Email</label>
+                <div>
+                    <input name="auth_slug" value="{{item.auth_slug}}" placeholder="john@doe.com" type="text" class="form-control" />
+
+                    {{#if errors.auth_slug}}
+                    <span class="help-text">{{errors.auth_slug}}</span>
+                    {{/if}}
+                </div>
+            </div>
+
+            <div class="form-group{{#if errors.auth_password}} has-error{{/if}}">
+                <label class="control-label">Password</label>
+                <div>
+                    <input name="auth_password" value="{{item.auth_password}}" placeholder="Enter a password" type="password" class="form-control" />
+
+                    {{#if errors.auth_password}}
+                    <span class="help-text">{{errors.auth_password}}</span>
+                    {{/if}}
+                </div>
+            </div>
+            <div class="form-group{{#if errors.confirm}} has-error{{/if}}">
+                <label class="control-label">Confirm Password</label>
+                <div>
+                    <input name="confirm" value="{{item.confirm}}" placeholder="Enter a password" type="password" class="form-control" />
+
+                    {{#if errors.confirm}}
+                    <span class="help-text">{{errors.confirm}}</span>
+                    {{/if}}
+                </div>
+            </div>
+            <div class="clear form-group">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+</div>
