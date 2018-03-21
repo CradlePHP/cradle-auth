@@ -438,7 +438,7 @@ $this->post('/auth/account', function ($request, $response) {
     $this->trigger('csrf-validate', $request, $response);
 
     if ($response->isError()) {
-        return $this->triggerRoute('get', $route, $request, $response);
+        return $this->routeTo('get', $route, $request, $response);
     }
 
     //----------------------------//
@@ -465,7 +465,7 @@ $this->post('/auth/account', function ($request, $response) {
     //----------------------------//
     // 5. Interpret Results
     if ($response->isError()) {
-        return $this->triggerRoute('get', $route, $request, $response);
+        return $this->routeTo('get', $route, $request, $response);
     }
 
     //it was good
@@ -512,7 +512,7 @@ $this->post('/auth/login', function ($request, $response) {
     $this->trigger('csrf-validate', $request, $response);
 
     if ($response->isError()) {
-        return $this->triggerRoute('get', $route, $request, $response);
+        return $this->routeTo('get', $route, $request, $response);
     }
 
     //----------------------------//
@@ -525,7 +525,7 @@ $this->post('/auth/login', function ($request, $response) {
     //----------------------------//
     // 5. Interpret Results
     if ($response->isError()) {
-        return $this->triggerRoute('get', $route, $request, $response);
+        return $this->routeTo('get', $route, $request, $response);
     }
 
     //it was good
@@ -580,7 +580,7 @@ $this->post('/auth/forgot', function ($request, $response) {
     $this->trigger('csrf-validate', $request, $response);
 
     if ($response->isError()) {
-        return $this->triggerRoute('get', $route, $request, $response);
+        return $this->routeTo('get', $route, $request, $response);
     }
 
     //----------------------------//
@@ -593,7 +593,7 @@ $this->post('/auth/forgot', function ($request, $response) {
     //----------------------------//
     // 5. Interpret Results
     if ($response->isError()) {
-        return $this->triggerRoute('get', $route, $request, $response);
+        return $this->routeTo('get', $route, $request, $response);
     }
 
     //its good
@@ -667,7 +667,7 @@ $this->post('/auth/recover/:auth_id/:hash', function ($request, $response) {
     $this->trigger('csrf-validate', $request, $response);
 
     if ($response->isError()) {
-        return $this->triggerRoute('get', $route, $request, $response);
+        return $this->routeTo('get', $route, $request, $response);
     }
 
     //----------------------------//
@@ -678,7 +678,7 @@ $this->post('/auth/recover/:auth_id/:hash', function ($request, $response) {
     //----------------------------//
     // 5. Interpret Results
     if ($response->isError()) {
-        return $this->triggerRoute('get', $route, $request, $response);
+        return $this->routeTo('get', $route, $request, $response);
     }
 
     //if we dont want to redirect
@@ -726,14 +726,14 @@ $this->post('/auth/signup', function ($request, $response) {
     $this->trigger('csrf-validate', $request, $response);
 
     if ($response->isError()) {
-        return $this->triggerRoute('get', $route, $request, $response);
+        return $this->routeTo('get', $route, $request, $response);
     }
 
     //captcha check
     $this->trigger('captcha-validate', $request, $response);
 
     if ($response->isError()) {
-        return $this->triggerRoute('get', $route, $request, $response);
+        return $this->routeTo('get', $route, $request, $response);
     }
 
     //----------------------------//
@@ -746,7 +746,7 @@ $this->post('/auth/signup', function ($request, $response) {
     //----------------------------//
     // 5. Interpret Results
     if ($response->isError()) {
-        return $this->triggerRoute('get', $route, $request, $response);
+        return $this->routeTo('get', $route, $request, $response);
     }
 
     //if we dont want to redirect
@@ -788,7 +788,7 @@ $this->post('/auth/verify', function ($request, $response) {
     $this->trigger('csrf-validate', $request, $response);
 
     if ($response->isError()) {
-        return $this->triggerRoute('get', $route, $request, $response);
+        return $this->routeTo('get', $route, $request, $response);
     }
 
     //----------------------------//
@@ -801,7 +801,7 @@ $this->post('/auth/verify', function ($request, $response) {
     //----------------------------//
     // 4. Interpret Results
     if ($response->isError()) {
-        return $this->triggerRoute('get', $route, $request, $response);
+        return $this->routeTo('get', $route, $request, $response);
     }
 
     //determine redirect

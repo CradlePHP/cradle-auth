@@ -12,7 +12,7 @@ return [
             'label' => 'Slug',
             'name' => 'slug',
             'field' => [
-                'type' => 'text',
+                'type' => 'slug',
             ],
             'validation' => [
                 [

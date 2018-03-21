@@ -18,7 +18,13 @@ $this->on('auth-create', function ($request, $response) {});
  * @param Request $request
  * @param Response $response
  */
-$this->on('auth-detail', function ($request, $response) {});
+$this->on('auth-detail', function ($request, $response) {
+    //set profile as schema
+    $request->setStage('schema', 'auth');
+
+    //trigger object detail
+    $this->trigger('system-object-detail', $request, $response);
+});
 
 /**
  * Removes a auth
