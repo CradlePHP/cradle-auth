@@ -22,8 +22,8 @@ $this->on('auth-detail', function ($request, $response) {
     //set profile as schema
     $request->setStage('schema', 'auth');
 
-    //trigger object detail
-    $this->trigger('system-object-detail', $request, $response);
+    //trigger model detail
+    $this->trigger('system-model-detail', $request, $response);
 });
 
 /**

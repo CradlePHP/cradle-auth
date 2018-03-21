@@ -8,7 +8,7 @@
  */
 namespace Cradle\Package\Auth;
 
-use Cradle\Package\System\Object\Service as ObjectService;
+use Cradle\Package\System\Model\Service as ObjectService;
 use Cradle\Package\System\Schema;
 
 use Cradle\Module\System\Utility\Validator as UtilityValidator;
@@ -89,7 +89,7 @@ class Validator
         //auth_slug        Required
         if (!isset($data['auth_slug']) || empty($data['auth_slug'])) {
             $errors['auth_slug'] = 'Cannot be empty';
-        } else if (!$schema->object()->service('sql')->exists('auth_slug', $data['auth_slug'])) {
+        } else if (!$schema->model()->service('sql')->exists('auth_slug', $data['auth_slug'])) {
             $errors['auth_slug'] = 'User does not exist';
         }
 
@@ -97,7 +97,7 @@ class Validator
         if (!isset($data['auth_password']) || empty($data['auth_password'])) {
             $errors['auth_password'] = 'Cannot be empty';
         } else if (!isset($errors['auth_slug'])) {
-            if (!$schema->object()->service('sql')->exists(
+            if (!$schema->model()->service('sql')->exists(
                     'auth_password',
                     md5($data['auth_password'])
                 )

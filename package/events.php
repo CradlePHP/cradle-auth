@@ -8,6 +8,9 @@ use Cradle\Storm\SqlFactory;
 use Cradle\Package\System\Schema;
 use Cradle\Package\System\Exception;
 
+use Cradle\Http\Request;
+use Cradle\Http\Response;
+
 /**
  * $ cradle package install cradlephp/cradle-auth
  * $ cradle package install cradlephp/cradle-auth 1.0.0
@@ -22,7 +25,7 @@ $this->on('cradlephp-cradle-auth-install', function ($request, $response) {
     $name = 'cradlephp/cradle-auth';
 
     //if it's already installed
-    if ($this->package('global')->config('version', $name)) {
+    if ($this->package('global')->config('packages', $name)) {
         $message = sprintf('%s is already installed', $name);
         return $response->setError(true, $message);
     }
@@ -31,7 +34,11 @@ $this->on('cradlephp-cradle-auth-install', function ($request, $response) {
     $version = $this->package('cradlephp/cradle-auth')->install('0.0.0');
 
     // update the config
-    $this->package('global')->config('version', $name, $version);
+    $this->package('global')->config('packages', $name, [
+        'version' => $version,
+        'active' => true
+    ]);
+
     $response->setResults('version', $version);
 });
 
@@ -49,7 +56,15 @@ $this->on('cradlephp-cradle-auth-update', function ($request, $response) {
     $name = 'cradlephp/cradle-auth';
 
     //get the current version
-    $current = $this->package('global')->config('version', $name);
+    $current = $this->package('global')->config('packages', $name);
+
+    // if version is set
+    if (is_array($current) && isset($current['version'])) {
+        // get the current version
+        $current = $current['version'];
+    } else {
+        $current = null;
+    }
 
     //if it's not installed
     if (!$current) {
@@ -67,11 +82,14 @@ $this->on('cradlephp-cradle-auth-update', function ($request, $response) {
     }
 
     // update package
-    // install package
     $version = $this->package('cradlephp/cradle-auth')->install($current);
 
     // update the config
-    $this->package('global')->config('versions', $name, $version);
+    $this->package('global')->config('packages', $name, [
+        'version' => $version,
+        'active' => true
+    ]);
+
     $response->setResults('version', $version);
 });
 
@@ -83,8 +101,20 @@ $this->on('cradlephp-cradle-auth-update', function ($request, $response) {
  * @param Response $response
  */
 $this->on('cradlephp-cradle-auth-remove', function ($request, $response) {
+    //custom name of this package
+    $name = 'cradlephp/cradle-auth';
+
+    // if it's not installed
+    if (!$this->package('global')->config('packages', $name)) {
+        $message = sprintf('%s is not installed', $name);
+        return $response->setError(true, $message);
+    }
+
     //setup result counters
     $errors = [];
+
+    // processed data
+    $processed = [];
 
     //scan through each file
     foreach (scandir(__DIR__ . '/schema') as $file) {
@@ -126,6 +156,17 @@ $this->on('cradlephp-cradle-auth-remove', function ($request, $response) {
         $response->set('json', 'validation', $errors);
     }
 
+    // get package config
+    $packages = $this->package('global')->config('packages');
+
+    // remove package from config
+    if (isset($packages[$name])) {
+        unset($packages[$name]);
+    }
+
+    // update package config
+    $this->package('global')->config('packages', $packages);
+
     $response->setResults('schemas', $processed);
 });
 
@@ -136,7 +177,47 @@ $this->on('cradlephp-cradle-auth-remove', function ($request, $response) {
  * @param Request $request
  * @param Response $response
  */
-$this->on('cradlephp-cradle-auth-elastic-flush', function ($request, $response) {});
+$this->on('cradlephp-cradle-auth-elastic-flush', function ($request, $response) {
+    $processed = $errors = [];
+    //scan through each file
+    foreach (scandir(__DIR__ . '/schema') as $file) {
+        //if it's not a php file
+        if(substr($file, -4) !== '.php') {
+            //skip
+            continue;
+        }
+
+        //get the schema data
+        $data = include sprintf('%s/schema/%s', __DIR__, $file);
+
+        // if name is not set
+        if (!isset ($data['name'])) {
+            // skip
+            continue;
+        }
+
+        // set parameters
+        $request->setStage('name', $data['name']);
+        // trigger global schema flush
+        $this->trigger('system-schema-flush-elastic', $request, $response);
+        // intercept error
+        if ($response->isError()) {
+            //collect all the errors
+            $errors[$data['name']] = $response->getMessage();
+            continue;
+        }
+
+
+        $processed[] = $data['name'];
+    }
+
+    if (!empty($errors)) {
+        $response->set('json', 'validation', $errors);
+    }
+
+    // set response
+    $response->setResults('schema', $processed);
+});
 
 /**
  * $ cradle elastic map cradlephp/cradle-auth
@@ -145,7 +226,46 @@ $this->on('cradlephp-cradle-auth-elastic-flush', function ($request, $response) 
  * @param Request $request
  * @param Response $response
  */
-$this->on('cradlephp-cradle-auth-elastic-map', function ($request, $response) {});
+$this->on('cradlephp-cradle-auth-elastic-map', function ($request, $response) {
+    $processed = $errors = [];
+    //scan through each file
+    foreach (scandir(__DIR__ . '/schema') as $file) {
+        //if it's not a php file
+        if(substr($file, -4) !== '.php') {
+            //skip
+            continue;
+        }
+
+        //get the schema data
+        $data = include sprintf('%s/schema/%s', __DIR__, $file);
+        // if name is not set
+        if (!isset ($data['name'])) {
+            // skip
+            continue;
+        }
+
+        // set parameters
+        $request->setStage('name', $data['name']);
+        // trigger global schema flush
+        $this->trigger('system-schema-map-elastic', $request, $response);
+
+        // intercept error
+        if ($response->isError()) {
+            //collect all the errors
+            $errors[$data['name']] = $response->getMessage();
+            continue;
+        }
+
+        $processed[] = $data['name'];
+    }
+
+    // set response error
+    if (!empty ($errors)) {
+        $response->set('json', 'validation', $errors);
+    }
+
+    $response->setResults('schema', $processed);
+});
 
 /**
  * $ cradle elastic populate cradlephp/cradle-auth
@@ -154,7 +274,46 @@ $this->on('cradlephp-cradle-auth-elastic-map', function ($request, $response) {}
  * @param Request $request
  * @param Response $response
  */
-$this->on('cradlephp-cradle-auth-elastic-populate', function ($request, $response) {});
+$this->on('cradlephp-cradle-auth-elastic-populate', function ($request, $response) {
+    $processed = $errors = [];
+    //scan through each file
+    foreach (scandir(__DIR__ . '/schema') as $file) {
+        //if it's not a php file
+        if(substr($file, -4) !== '.php') {
+            //skip
+            continue;
+        }
+
+        //get the schema data
+        $data = include sprintf('%s/schema/%s', __DIR__, $file);
+        // if name is not set
+        if (!isset ($data['name'])) {
+            // skip
+            continue;
+        }
+
+        // set parameters
+        $request->setStage('name', $data['name']);
+        // trigger global schema flush
+        $this->trigger('system-schema-populate-elastic', $request, $response);
+        // intercept error
+        if ($response->isError()) {
+            $errors[$data['name']] = $response->getMessage();
+            continue;
+        }
+
+        $processed[] = $data['name'];
+
+    }
+
+    // set response error
+    if (!empty($errors)) {
+        $response->set('json', 'validation', $errors);
+    }
+
+    // set response
+    $response->setResults('schema', 'auth');
+});
 
 /**
  * $ cradle redis flush cradlephp/cradle-auth
@@ -163,7 +322,17 @@ $this->on('cradlephp-cradle-auth-elastic-populate', function ($request, $respons
  * @param Request $request
  * @param Response $response
  */
-$this->on('cradlephp-cradle-auth-redis-flush', function ($request, $response) {});
+$this->on('cradlephp-cradle-auth-redis-flush', function ($request, $response) {
+    // initialize schema
+    $schema = Schema::i('auth');
+    // get redis service
+    $redis = $schema->model()->service('redis');
+    // remove cached search and detail from redis
+    $redis->removeSearch();
+    $redis->removeDetail();
+
+    $response->setResults('schema', 'auth');
+});
 
 /**
  * $ cradle redis populate cradlephp/cradle-auth
@@ -172,7 +341,38 @@ $this->on('cradlephp-cradle-auth-redis-flush', function ($request, $response) {}
  * @param Request $request
  * @param Response $response
  */
-$this->on('cradlephp-cradle-auth-redis-populate', function ($request, $response) {});
+$this->on('cradlephp-cradle-auth-redis-populate', function ($request, $response) {
+    // initialize schema
+    $schema = Schema::i('auth');
+    // get sql service
+    $sql = $schema->model()->service('sql');
+    $redis = $schema->model()->service('redis');
+    // get sql data
+    $data = $sql->search();
+    // if there is no results
+    if (!isset($data['total']) && $data['total'] < 1) {
+        // do not proceed
+        return $response->setResults('schema', 'auth');
+    }
+
+    // get slugable fields
+    $slugs = $schema->getSlugableFieldNames($schema->getPrimaryFieldName());
+    // loop through rows
+    foreach ($data['rows'] as $entry) {
+        // loop thru slugs
+        foreach ($slugs as $slug) {
+            // if entry found
+            if (isset($entry[$slug])) {
+                // create cache data on redis
+                $redis->createDetail($slug . '-' . $entry[$slug], $entry);
+            }
+        }
+
+    }
+
+    $response->setResults('schema', 'auth');
+
+});
 
 /**
  * $ cradle sql build cradlephp/cradle-auth
@@ -224,7 +424,7 @@ $this->on('cradlephp-cradle-auth-sql-build', function ($request, $response) {
 
         //now build it back up
         //set the data
-        $request->setStage($data);
+        $request->setStage($schema->get());
 
         //----------------------------//
         // 1. Prepare Data
@@ -270,7 +470,7 @@ $this->on('cradlephp-cradle-auth-sql-build', function ($request, $response) {
         $response->set('json', 'validation', $errors);
     }
 
-    $response->setResults('schemas', $processed);
+    $response->setResults(['schemas' => $processed]);
 });
 
 /**
@@ -335,23 +535,33 @@ $this->on('cradlephp-cradle-auth-sql-flush', function ($request, $response) {
  * @param Response $response
  */
 $this->on('cradlephp-cradle-auth-sql-populate', function ($request, $response) {
-    //load up the database
-    $pdo = $this->package('global')->service('sql-main');
-    $database = SqlFactory::load($pdo);
-    //load up the script
-    $script = file_get_contents(__DIR__ . '/install/populate.sql');
-    //split into queries
-    $queries = explode(';', $script);
-    //loop through queries
-    foreach($queries as $query) {
-        //trim it
-        $query = trim($query);
-
-        if(!$query) {
+    //scan through each file
+    foreach (scandir(__DIR__ . '/schema') as $file) {
+        //if it's not a php file
+        if(substr($file, -4) !== '.php') {
+            //skip
             continue;
         }
 
-        //execute the query
-        $database->query($query);
+        //get the schema data
+        $data = include sprintf('%s/schema/%s', __DIR__, $file);
+
+        //if no name
+        if (!isset($data['name'], $data['fixtures'])
+            || !is_array($data['fixtures'])
+        ) {
+            //skip
+            continue;
+        }
+
+        $actionRequest = Request::i()->load();
+        $actionResponse = Response::i()->load();
+        foreach($data['fixtures'] as  $fixture) {
+            $actionRequest
+                ->setStage($fixture)
+                ->setStage('schema', 'auth');
+
+            $this->trigger('system-model-create', $actionRequest, $actionResponse);
+        }
     }
 });

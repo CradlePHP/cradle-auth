@@ -5,15 +5,16 @@ return [
     'plural' => 'Authentications',
     'name' => 'auth',
     'icon' => 'fas fa-lock',
-    'detail' => 'Generic auth designed to separate public data from sensitive data like passwords. Best used with auth tables.',
+    'detail' => 'Generic auth designed to separate public data from sensitive data like passwords.',
     'fields' => [
         [
             'disable' => '1',
             'label' => 'Slug',
             'name' => 'slug',
             'field' => [
-                'type' => 'slug',
+                'type' => 'text',
             ],
+            'type' => 'slug',
             'validation' => [
                 [
                     'method' => 'required',
@@ -51,7 +52,7 @@ return [
             'label' => 'Password',
             'name' => 'password',
             'field' => [
-                'type' => 'active',
+                'type' => 'text',
             ],
             'list' => [
                 'format' => 'hide',
@@ -59,7 +60,7 @@ return [
             'detail' => [
                 'format' => 'hide',
             ],
-            'default' => '1',
+            'default' => '',
             'filterable' => '1',
             'sortable' => '1'
         ],
@@ -68,7 +69,7 @@ return [
             'label' => 'Type',
             'name' => 'type',
             'field' => [
-                'type' => 'active',
+                'type' => 'text',
             ],
             'list' => [
                 'format' => 'hide',
@@ -76,7 +77,7 @@ return [
             'detail' => [
                 'format' => 'hide',
             ],
-            'default' => '1',
+            'default' => '',
             'filterable' => '1',
             'sortable' => '1'
         ],
@@ -134,6 +135,16 @@ return [
         [
             'many' => '1',
             'name' => 'profile'
+        ]
+    ],
+    'fixtures' => [
+        [
+            'auth_slug'     => 'john@doe.com',
+            'auth_password' => '202cb962ac59075b964b07152d234b70',
+            'auth_type'     => 'admin',
+            'auth_created'  => '2018-02-03 01:45:16',
+            'auth_updated'  => '2018-02-03 01:45:16',
+            'profile_id'    => 1
         ]
     ],
     'suggestion' => '{{auth_slug}}'
