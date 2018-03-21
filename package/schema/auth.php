@@ -5,7 +5,7 @@ return [
     'plural' => 'Authentications',
     'name' => 'auth',
     'icon' => 'fas fa-lock',
-    'detail' => 'Generic auth designed to separate public data from sensitive data like passwords.',
+    'detail' => 'Collection of verified users. The process of identifying an individual',
     'fields' => [
         [
             'disable' => '1',
