@@ -528,8 +528,15 @@ $this->post('/auth/login', function ($request, $response) {
         return $this->routeTo('get', $route, $request, $response);
     }
 
-    //it was good
+    // if accoutn is not activated
+    if ($response->getResults('auth_active') == 0) {
+        // set message
+        $this->package('global')->flash('Your account is not activated.', 'warning');
+        // set redirect
+        $this->package('global')->redirect('/auth/login');
+    }
 
+    //it was good
     //store to session
     //TODO: Sessions for clusters
     $request->setSession('me', $response->getResults());
