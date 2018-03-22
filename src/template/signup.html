@@ -18,7 +18,13 @@
             <!-- END: Card Title -->
             <!-- START: Auth Signup Form -->
             <form method="post">
-                <!-- START: User Name -->
+                {{#if item.profile_id}}
+                    <input
+                        type="hidden"
+                        name="profile_id"
+                        value="{{item.profile_id}}">
+                {{/if}}
+                <!-- START: Profile Name -->
                 <div class="form-group{{#if errors.profile_name}} has-error{{/if}}">
                     <div class="input-group">
                         <div class="input-group-prepend">
@@ -39,7 +45,7 @@
                         <span class="help-text">{{errors.profile_name}}</span>
                     {{/if}}
                 </div>
-                <!-- END: User Name -->
+                <!-- END: Profile Name -->
                 <!-- START: Auth Slug -->
                 <div class="form-group{{#if errors.auth_slug}} has-error{{/if}}">
                     <div class="input-group">
@@ -62,7 +68,7 @@
                     {{/if}}
                 </div>
                 <!-- END: Auth Slug -->
-                <!-- START: User Required Fields -->
+                <!-- START: Profile Required Fields -->
                 {{#each schema.fields}}
                     {{#notin 'none,hide,active,created,updated,email,password' field.type}}
                         {{#in ../schema.required @key}}

@@ -754,6 +754,11 @@ $this->post('/auth/signup', function ($request, $response) {
         return;
     }
 
+    $request->setSoftStage($response->getResults());
+
+    // send verify email
+    $this->trigger('auth-verify', $request, $response);
+
     //add a flash
     $message = $this->package('global')->translate('Sign Up Successful. Please check your email for verification process.');
     $this->package('global')->flash($message, 'success');
@@ -819,4 +824,62 @@ $this->post('/auth/verify', function ($request, $response) {
     $message = $this->package('global')->translate('An email with verification instructions will be sent in a few minutes.');
     $this->package('global')->flash($message, 'success');
     $this->package('global')->redirect($redirect);
+});
+
+/**
+ * Process the Verification Page
+ *
+ * SIGNUP FLOW:
+ * - GET /signup
+ * - POST /signup
+ * - EMAIL
+ * - GET /activate/auth_id/hash
+ * - GET /login
+ *
+ * VERIFY FLOW:
+ * - GET /verify
+ * - POST /verify
+ * - EMAIL
+ * - GET /activate/auth_id/hash
+ * - GET /login
+ *
+ * @param Request $request
+ * @param Response $response
+ */
+$cradle->get('/auth/activate/:auth_id/:hash', function ($request, $response) {
+    //get the detail
+    $this->trigger('auth-detail', $request, $response);
+
+    //form hash
+    $authId = $response->getResults('auth_id');
+    $authUpdated = $response->getResults('auth_updated');
+    $hash = md5($authId.$authUpdated);
+
+    //check the verification hash
+    if ($hash !== $request->getStage('hash')) {
+        $this->package('global')->flash('Invalid verification. Try again.', 'danger');
+        return $this->package('global')->redirect('/auth/verify');
+    }
+
+    //activate
+    $request->setStage('auth_active', 1);
+
+    if ($request->hasSession('me')) {
+        $request->setSession('me', 'auth_active', 1);
+    }
+
+    //trigger the job
+    $this->trigger('auth-update', $request, $response);
+
+    if ($response->isError()) {
+        $this->package('global')->flash('Invalid verification. Try again.', 'danger');
+        return $this->package('global')->redirect('/auth/verify');
+    }
+
+    //it was good
+    //add a flash
+    $this->package('global')->flash('Activation Successful', 'success');
+
+    //redirect
+    $this->package('global')->redirect('/auth/login');
 });

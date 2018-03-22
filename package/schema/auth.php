@@ -5,7 +5,7 @@ return [
     'plural' => 'Authentications',
     'name' => 'auth',
     'icon' => 'fas fa-lock',
-    'detail' => 'Collection of verified users. The process of identifying an individual',
+    'detail' => 'Generic auth designed to separate public data from sensitive data like passwords.',
     'fields' => [
         [
             'disable' => '1',
@@ -54,6 +54,12 @@ return [
             'field' => [
                 'type' => 'text',
             ],
+            'validation' => [
+                [
+                    'method' => 'required',
+                    'message' => 'Password is Required'
+                ]
+            ],    
             'list' => [
                 'format' => 'hide',
             ],

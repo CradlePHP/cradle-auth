@@ -33,11 +33,13 @@ class Validator
      */
     public static function getCreateErrors(array $data, array $errors = [])
     {
+        $schema = Schema::i('auth');
+
         //auth_slug        Required
         if (!isset($data['auth_slug']) || empty($data['auth_slug'])) {
             $errors['auth_slug'] = 'Cannot be empty';
-        } else if (Service::get('sql')->exists($data['auth_slug'])) {
-            $errors['auth_slug'] = 'User Exists';
+        } else if ($schema->model()->service('sql')->exists('auth_slug', $data['auth_slug'])) {
+            $errors['auth_slug'] = 'Email Already Exists';
         }
 
         //auth_password        Required
@@ -161,7 +163,7 @@ class Validator
             //if the auth slug is changing
             if ($row['auth_slug'] !== $data['auth_slug']) {
                 //check if new auth_slug is taken
-                if (Service::get('sql')->exists($data['auth_slug'])) {
+                if ($schema->model()->service('sql')->exists('auth_slug', $data['auth_slug'])) {
                     $errors['auth_slug'] = 'Already Taken';
                 }
             }
