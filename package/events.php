@@ -24,10 +24,21 @@ $this->on('cradlephp-cradle-auth-install', function ($request, $response) {
     //custom name of this package
     $name = 'cradlephp/cradle-auth';
 
+    //get the current version
+    $current = $this->package('global')->config('packages', $name);
+
+    // if version is set
+    if (is_array($current) && isset($current['version'])) {
+    	// get the current version
+    	$current = $current['version'];
+    } else {
+    	$current = null;
+    }
+
     //if it's already installed
-    if ($this->package('global')->config('packages', $name)) {
-        $message = sprintf('%s is already installed', $name);
-        return $response->setError(true, $message);
+    if ($current) {
+    	$message = sprintf('%s is already installed', $name);
+    	return $response->setError(true, $message);
     }
 
     // install package
@@ -35,8 +46,8 @@ $this->on('cradlephp-cradle-auth-install', function ($request, $response) {
 
     // update the config
     $this->package('global')->config('packages', $name, [
-        'version' => $version,
-        'active' => true
+    	'version' => $version,
+    	'active' => true
     ]);
 
     $response->setResults('version', $version);
