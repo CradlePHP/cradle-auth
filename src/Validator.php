@@ -8,9 +8,7 @@
  */
 namespace Cradle\Package\Auth;
 
-use Cradle\Package\System\Model\Service as ModelService;
 use Cradle\Package\System\Schema;
-
 use Cradle\Module\System\Utility\Validator as UtilityValidator;
 
 /**
@@ -97,7 +95,7 @@ class Validator
 
         // check if exists
         $row = $schema->model()->service('sql')->getResource()
-            ->search('auth')
+            ->search($schema->getName())
             ->addFilter('auth_slug = %s', $data['auth_slug'])
             ->addFilter('auth_password = %s', md5($data['auth_password']))
             ->getRow();
