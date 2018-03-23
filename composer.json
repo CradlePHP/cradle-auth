@@ -24,7 +24,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Cradle\\Package\\Auth\\": "cradlephp/cradle-auth/src/"
+            "Cradle\\Package\\Auth\\": "src/"
         }
     }
 }

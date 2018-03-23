@@ -175,9 +175,7 @@ $this->package('cradlephp/cradle-auth')
     $partials = []
 ) {
     // get the root directory
-    $type = ucwords($type);
     $root =  sprintf('%s/../src/template/', __DIR__);
-
 
     // check for partials
     if (!is_array($partials)) {
