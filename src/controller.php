@@ -31,9 +31,8 @@ $this->get('/auth/signup', function ($request, $response) {
     //Prepare body
     $data = ['item' => $request->getPost()];
 
-    $userSchema = SystemSchema::i('profile');
-
-    $data['schema'] = $userSchema->getAll();
+    $profileSchema = SystemSchema::i('profile');
+    $data['schema'] = $profileSchema->getAll();
 
     //add CSRF
     $this->trigger('csrf-load', $request, $response);
@@ -92,15 +91,7 @@ $this->get('/auth/signup', function ($request, $response) {
  */
 $this->get('/auth/login', function ($request, $response) {
     //----------------------------//
-    // 1. Security Checks
-    // double check if session exists
-    if (!empty($request->getSession('me'))) {
-        // redirect to home
-        return $this->package('global')->redirect('/');
-    }
-
-    //----------------------------//
-    // 2. Prepare Data
+    // 1. Prepare Data
     //Prepare body
     $data = ['item' => $request->getPost()];
 
@@ -116,7 +107,7 @@ $this->get('/auth/login', function ($request, $response) {
     }
 
     //----------------------------//
-    // 3. Render Template
+    // 2. Render Template
     //Render body
     $class = 'page-auth-login';
     $title = $this->package('global')->translate('Log In');
@@ -182,9 +173,8 @@ $this->get('/auth/account', function ($request, $response) {
     //Prepare body
     $data = ['item' => $request->getPost()];
 
-    $userSchema = SystemSchema::i('profile');
-
-    $data['schema'] = $userSchema->getAll();
+    $profileSchema = SystemSchema::i('profile');
+    $data['schema'] = $profileSchema->getAll();
 
     //add CDN
     $config = $this->package('global')->service('s3-main');
