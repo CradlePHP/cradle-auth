@@ -52,7 +52,7 @@ return [
             'label' => 'Password',
             'name' => 'password',
             'field' => [
-                'type' => 'text',
+                'type' => 'password',
             ],
             'validation' => [
                 [
