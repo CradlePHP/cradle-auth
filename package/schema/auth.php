@@ -13,6 +13,9 @@ return [
             'name' => 'slug',
             'field' => [
                 'type' => 'text',
+                'attributes' => [
+                    'placeholder' => 'Enter email',
+                ]
             ],
             'type' => 'slug',
             'validation' => [
@@ -53,6 +56,15 @@ return [
             'name' => 'password',
             'field' => [
                 'type' => 'password',
+                'attributes' => [
+                    'placeholder' => 'Enter a password',
+                ]
+            ],
+            'sql' => [
+                'type' => 'varchar',
+                'length' => 255,
+                'encoding' => 'md5',
+                'index' => true
             ],
             'validation' => [
                 [
@@ -146,7 +158,7 @@ return [
     'fixtures' => [
         [
             'auth_slug'     => 'john@doe.com',
-            'auth_password' => '202cb962ac59075b964b07152d234b70',
+            'auth_password' => '123',
             'auth_type'     => 'admin',
             'auth_created'  => '2018-02-03 01:45:16',
             'auth_updated'  => '2018-02-03 01:45:16',

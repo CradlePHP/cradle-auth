@@ -61,9 +61,6 @@ $this->on('auth-create', function ($request, $response) {
     //set auth as schema
     $request->setStage('schema', 'auth');
 
-    // set password md5
-    $request->setStage('auth_password', md5($data['auth_password']));
-
     //trigger model create
     $this->trigger('system-model-create', $request, $response);
 });
@@ -316,9 +313,6 @@ $cradle->on('auth-recover', function ($request, $response) {
 
     //----------------------------//
     // 3. Process Data
-    // set password md5
-    $request->setStage('auth_password', md5($data['auth_password']));
-
     //update
     $this->trigger('auth-update', $request, $response);
 
