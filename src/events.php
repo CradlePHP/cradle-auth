@@ -46,7 +46,7 @@ $this->on('auth-create', function ($request, $response) {
         // set profile as schema
         $request->setStage('schema', 'profile');
         // trigger model create
-        cradle()->trigger('system-model-create', $request, $response);
+        $this->trigger('system-model-create', $request, $response);
 
         if ($response->isError()) {
             return;
@@ -212,7 +212,7 @@ $this->on('auth-remove', function ($request, $response) {
     // set auth as schema
     $request->setStage('schema', 'auth');
     // trigger model create
-    cradle()->trigger('system-model-remove', $request, $response);
+    $this->trigger('system-model-remove', $request, $response);
 });
 
 /**
@@ -225,7 +225,7 @@ $this->on('auth-restore', function ($request, $response) {
     // set auth as schema
     $request->setStage('schema', 'auth');
     // trigger model create
-    cradle()->trigger('system-model-restore', $request, $response);
+    $this->trigger('system-model-restore', $request, $response);
 });
 
 /**
