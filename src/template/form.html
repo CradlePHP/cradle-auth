@@ -2,12 +2,12 @@
     <ol class="breadcrumb">
         <li class="breadcrumb-item">
             <a href="/admin">
-                <i class="fas fa-home"></i> Admin
+                <i class="fas fa-home"></i> {{_ 'Admin'}}
             </a>
         </li>
         <li class="breadcrumb-item">
             <a href="/admin/user/search">
-                <i class="fas fa-lock"></i> Auth
+                <i class="fas fa-lock"></i> {{_ 'Auth'}}
             </a>
         </li>
         <li class="breadcrumb-item active" aria-current="page">
@@ -28,7 +28,7 @@
         </div>
         <div class="box-body box-padding">
             <div class="form-group{{#if errors.auth_slug}} has-error{{/if}}">
-                <label class="control-label">Email</label>
+                <label class="control-label">{{_ 'Email'}}</label>
                 <div>
                     <input name="auth_slug" value="{{item.auth_slug}}" placeholder="john@doe.com" type="text" class="form-control" />
 
@@ -39,7 +39,7 @@
             </div>
 
             <div class="form-group{{#if errors.auth_password}} has-error{{/if}}">
-                <label class="control-label">Password</label>
+                <label class="control-label">{{_ 'Password'}}</label>
                 <div>
                     <input name="auth_password" value="{{item.auth_password}}" placeholder="Enter a password" type="password" class="form-control" />
 
@@ -59,7 +59,7 @@
                 </div>
             </div>
             <div class="clear form-group">
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary">{{_ 'Submit'}}</button>
             </div>
         </form>
 </div>
