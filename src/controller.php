@@ -92,6 +92,18 @@ $this->get('/auth/signup', function ($request, $response) {
 $this->get('/auth/login', function ($request, $response) {
     //----------------------------//
     // 1. Prepare Data
+    // get home page
+    $home = $this->package('global')->config('settings', 'home');
+
+    if (!$home) {
+        $home = '/';
+    }
+
+    // already logged in?
+    if ($request->getSession('me')) {
+        return $this->package('global')->redirect($home);
+    }
+
     //Prepare body
     $data = ['item' => $request->getPost()];
 
