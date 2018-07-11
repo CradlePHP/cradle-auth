@@ -64,9 +64,15 @@ $this->get('/auth/signup', function ($request, $response) {
     //Render body
     $class = 'page-auth-signup';
     $title = $this->package('global')->translate('Sign Up');
-    $body = $this->package('cradlephp/cradle-auth')->template('signup', $data, [
-        'partial_fields'
-    ]);
+    $body = $this
+        ->package('cradlephp/cradle-auth')
+        ->template(
+            'signup',
+            $data,
+            ['partial_fields'],
+            $response->getPage('template_root'),
+            $response->getPage('partials_root')
+        );
 
     //Set Content
     $response
@@ -126,7 +132,13 @@ $this->get('/auth/login', function ($request, $response) {
 
     $body = $this
         ->package('cradlephp/cradle-auth')
-        ->template('login', $data);
+        ->template(
+            'login',
+            $data,
+            [],
+            $response->getPage('template_root'),
+            $response->getPage('partials_root')
+        );
 
     //Set Content
     $response
@@ -219,9 +231,15 @@ $this->get('/auth/account', function ($request, $response) {
     //Render body
     $class = 'page-auth-account';
     $title = $this->package('global')->translate('Account Settings');
-    $body = $this->package('cradlephp/cradle-auth')->template('account', $data, [
-        'partial_fields'
-    ]);
+    $body = $this
+        ->package('cradlephp/cradle-auth')
+        ->template(
+            'account',
+            $data,
+            ['partial_fields'],
+            $response->getPage('template_root'),
+            $response->getPage('partials_root')
+        );
 
     //Set Content
     $response
@@ -274,7 +292,15 @@ $this->get('/auth/forgot', function ($request, $response) {
     //Render body
     $class = 'page-auth-forgot';
     $title = $this->package('global')->translate('Forgot Password');
-    $body =$this->package('cradlephp/cradle-auth')->template('forgot', $data);
+    $body = $this
+        ->package('cradlephp/cradle-auth')
+        ->template(
+            'forgot',
+            $data,
+            [],
+            $response->getPage('template_root'),
+            $response->getPage('partials_root')
+        );
 
     //Set Content
     $response
@@ -341,7 +367,15 @@ $this->get('/auth/recover/:auth_id/:hash', function ($request, $response) {
     //Render body
     $class = 'page-auth-recover';
     $title = $this->package('global')->translate('Recover Password');
-    $body = $this->package('cradlephp/cradle-auth')->template('recover', $data);
+    $body = $this
+        ->package('cradlephp/cradle-auth')
+        ->template(
+            'recover',
+            $data,
+            [],
+            $response->getPage('template_root'),
+            $response->getPage('partials_root')
+        );
 
     //Set Content
     $response
@@ -393,7 +427,15 @@ $this->get('/auth/verify', function ($request, $response) {
     //Render body
     $class = 'page-auth-verify';
     $title = $this->package('global')->translate('Verify Account');
-    $body = $this->package('cradlephp/cradle-auth')->template('verify', $data);
+    $body = $this
+        ->package('cradlephp/cradle-auth')
+        ->template(
+            'verify',
+            $data,
+            [],
+            $response->getPage('template_root'),
+            $response->getPage('partials_root')
+        );
 
     //Set Content
     $response
