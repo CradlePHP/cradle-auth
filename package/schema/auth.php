@@ -159,7 +159,7 @@ return [
         [
             'auth_slug'     => 'john@doe.com',
             'auth_password' => '123',
-            'auth_type'     => 'admin',
+            'auth_type'     => 'developer',
             'auth_created'  => '2018-02-03 01:45:16',
             'auth_updated'  => '2018-02-03 01:45:16',
             'profile_id'    => 1
