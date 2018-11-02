@@ -64,14 +64,25 @@ $this->get('/auth/signup', function ($request, $response) {
     //Render body
     $class = 'page-auth-signup';
     $title = $this->package('global')->translate('Sign Up');
+
+    $template = __DIR__ . '/template';
+    if (is_dir($response->getPage('template_root'))) {
+        $template = $response->getPage('template_root');
+    }
+
+    $partials = __DIR__ . '/template';
+    if (is_dir($response->getPage('partials_root'))) {
+        $partials = $response->getPage('partials_root');
+    }
+
     $body = $this
-        ->package('cradlephp/cradle-auth')
+        ->package('cradlephp/cradle-system')
         ->template(
             'signup',
             $data,
             ['partial_fields'],
-            $response->getPage('template_root'),
-            $response->getPage('partials_root')
+            $template,
+            $partials
         );
 
     //Set Content
@@ -130,14 +141,24 @@ $this->get('/auth/login', function ($request, $response) {
     $class = 'page-auth-login';
     $title = $this->package('global')->translate('Log In');
 
+    $template = __DIR__ . '/template';
+    if (is_dir($response->getPage('template_root'))) {
+        $template = $response->getPage('template_root');
+    }
+
+    $partials = __DIR__ . '/template';
+    if (is_dir($response->getPage('partials_root'))) {
+        $partials = $response->getPage('partials_root');
+    }
+
     $body = $this
-        ->package('cradlephp/cradle-auth')
+        ->package('cradlephp/cradle-system')
         ->template(
             'login',
             $data,
             [],
-            $response->getPage('template_root'),
-            $response->getPage('partials_root')
+            $template,
+            $partials
         );
 
     //Set Content
@@ -231,14 +252,25 @@ $this->get('/auth/account', function ($request, $response) {
     //Render body
     $class = 'page-auth-account';
     $title = $this->package('global')->translate('Account Settings');
+
+    $template = __DIR__ . '/template';
+    if (is_dir($response->getPage('template_root'))) {
+        $template = $response->getPage('template_root');
+    }
+
+    $partials = __DIR__ . '/template';
+    if (is_dir($response->getPage('partials_root'))) {
+        $partials = $response->getPage('partials_root');
+    }
+
     $body = $this
-        ->package('cradlephp/cradle-auth')
+        ->package('cradlephp/cradle-system')
         ->template(
             'account',
             $data,
             ['partial_fields'],
-            $response->getPage('template_root'),
-            $response->getPage('partials_root')
+            $template,
+            $partials
         );
 
     //Set Content
@@ -292,14 +324,25 @@ $this->get('/auth/forgot', function ($request, $response) {
     //Render body
     $class = 'page-auth-forgot';
     $title = $this->package('global')->translate('Forgot Password');
+
+    $template = __DIR__ . '/template';
+    if (is_dir($response->getPage('template_root'))) {
+        $template = $response->getPage('template_root');
+    }
+
+    $partials = __DIR__ . '/template';
+    if (is_dir($response->getPage('partials_root'))) {
+        $partials = $response->getPage('partials_root');
+    }
+
     $body = $this
-        ->package('cradlephp/cradle-auth')
+        ->package('cradlephp/cradle-system')
         ->template(
             'forgot',
             $data,
             [],
-            $response->getPage('template_root'),
-            $response->getPage('partials_root')
+            $template,
+            $partials
         );
 
     //Set Content
@@ -367,14 +410,25 @@ $this->get('/auth/recover/:auth_id/:hash', function ($request, $response) {
     //Render body
     $class = 'page-auth-recover';
     $title = $this->package('global')->translate('Recover Password');
+
+    $template = __DIR__ . '/template';
+    if (is_dir($response->getPage('template_root'))) {
+        $template = $response->getPage('template_root');
+    }
+
+    $partials = __DIR__ . '/template';
+    if (is_dir($response->getPage('partials_root'))) {
+        $partials = $response->getPage('partials_root');
+    }
+
     $body = $this
-        ->package('cradlephp/cradle-auth')
+        ->package('cradlephp/cradle-system')
         ->template(
             'recover',
             $data,
             [],
-            $response->getPage('template_root'),
-            $response->getPage('partials_root')
+            $template,
+            $partials
         );
 
     //Set Content
@@ -427,14 +481,25 @@ $this->get('/auth/verify', function ($request, $response) {
     //Render body
     $class = 'page-auth-verify';
     $title = $this->package('global')->translate('Verify Account');
+
+    $template = __DIR__ . '/template';
+    if (is_dir($response->getPage('template_root'))) {
+        $template = $response->getPage('template_root');
+    }
+
+    $partials = __DIR__ . '/template';
+    if (is_dir($response->getPage('partials_root'))) {
+        $partials = $response->getPage('partials_root');
+    }
+
     $body = $this
-        ->package('cradlephp/cradle-auth')
+        ->package('cradlephp/cradle-system')
         ->template(
             'verify',
             $data,
             [],
-            $response->getPage('template_root'),
-            $response->getPage('partials_root')
+            $template,
+            $partials
         );
 
     //Set Content
@@ -572,7 +637,7 @@ $this->post('/auth/login', function ($request, $response) {
         return $this->routeTo('get', $route, $request, $response);
     }
 
-    // if accoutn is not activated
+    // if account is not activated
     if ($response->getResults('auth_active') == 0) {
         // set message
         $this->package('global')->flash('Your account is not activated.', 'warning');
