@@ -60,20 +60,15 @@
                 </div>
                 <!-- END: Auth Slug -->
                 <!-- START: Profile Required Fields -->
-                {{#each schema.fields}}
-                    {{#notin 'none,hide,active,created,updated,email,password' field.type}}
-                        {{#in ../schema.required @key}}
+                {{#format 'field' schema.name item}}
+                    {{#each formats}}
+                        {{#notin 'none,hide,active,created,updated,email,password' config.type}}
                             {{#when @key '!=' 'profile_name'}}
-                                <div class="form-group{{#has ../errors @key}} has-error{{/has}}">
-                                    {{> partial_fields}}
-                                    {{#has ../errors @key}}
-                                        <span class="help-text">{{scope ../errors @key}}</span>
-                                    {{/has}}
-                                </div>
+                                {{> partial_set}}
                             {{/when}}
-                        {{/in}}
-                    {{/notin}}
-                {{/each}}
+                        {{/notin}}
+                    {{/each}}
+                {{/format}}
                 <!-- END: User Required Fields -->
                 <!-- START: Auth Password -->
                 <div class="form-group{{#if errors.auth_password}} has-error{{/if}}">

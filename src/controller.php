@@ -80,7 +80,7 @@ $this->get('/auth/signup', function ($request, $response) {
         ->template(
             'signup',
             $data,
-            ['partial_fields'],
+            ['partial_set'],
             $template,
             $partials
         );
