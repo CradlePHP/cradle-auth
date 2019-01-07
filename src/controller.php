@@ -31,8 +31,11 @@ $this->get('/auth/signup', function ($request, $response) {
     //Prepare body
     $data = ['item' => $request->getPost()];
 
+    $authSchema = SystemSchema::i('auth');
+    $data['auth_schema'] = $authSchema->getAll();
+
     $profileSchema = SystemSchema::i('profile');
-    $data['schema'] = $profileSchema->getAll();
+    $data['profile_schema'] = $profileSchema->getAll();
 
     //add CSRF
     $this->trigger('csrf-load', $request, $response);
@@ -45,7 +48,6 @@ $this->get('/auth/signup', function ($request, $response) {
     if ($response->isError()) {
         if ($response->getValidation('auth_slug')) {
             $message = $response->getValidation('auth_slug');
-            $response->addValidation('user_email', $message);
         }
 
         $response->setFlash($response->getMessage(), 'error');
@@ -53,7 +55,9 @@ $this->get('/auth/signup', function ($request, $response) {
     }
 
     //if there are file fields
-    if (!empty($data['schema']['files'])) {
+    if (!empty($data['auth_schema']['files'])
+        || !empty($data['profile_schema']['files'])
+    ) {
         //add CDN
         $config = $this->package('global')->service('s3-main');
         $data['cdn_config'] = File::getS3Client($config);
@@ -80,7 +84,7 @@ $this->get('/auth/signup', function ($request, $response) {
         ->template(
             'signup',
             $data,
-            ['partial_set'],
+            ['form_fieldset'],
             $template,
             $partials
         );
@@ -218,8 +222,11 @@ $this->get('/auth/account', function ($request, $response) {
     //Prepare body
     $data = ['item' => $request->getPost()];
 
+    $authSchema = SystemSchema::i('auth');
+    $data['auth_schema'] = $authSchema->getAll();
+
     $profileSchema = SystemSchema::i('profile');
-    $data['schema'] = $profileSchema->getAll();
+    $data['profile_schema'] = $profileSchema->getAll();
 
     //add CDN
     $config = $this->package('global')->service('s3-main');
@@ -268,7 +275,7 @@ $this->get('/auth/account', function ($request, $response) {
         ->template(
             'account',
             $data,
-            ['partial_fields'],
+            ['form_fieldset'],
             $template,
             $partials
         );

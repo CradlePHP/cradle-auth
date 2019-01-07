@@ -4,6 +4,8 @@
  */
 use Cradle\Package\Auth\Validator as AuthValidator;
 
+use Cradle\Package\System\Schema;
+
 /**
  * Creates a auth
  *
@@ -24,7 +26,23 @@ $this->on('auth-create', function ($request, $response) {
 
     //----------------------------//
     // 2. Validate Data
-    $errors = AuthValidator::getCreateErrors($data);
+    $authSchema = Schema::i('auth');
+    $profileSchema = Schema::i('profile');
+
+    $errors = $authSchema
+        ->model()
+        ->validator()
+        ->getCreateErrors($data);
+
+    $errors = $profileSchema
+        ->model()
+        ->validator()
+        ->getCreateErrors($data, $errors);
+
+    $errors = AuthValidator::getCreateErrors($data, $errors);
+
+    //auth will require profile
+    unset($errors['profile_id']);
 
     //if there are errors
     if (!empty($errors)) {
