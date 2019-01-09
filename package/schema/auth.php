@@ -90,10 +90,10 @@ return [
                 'type' => 'text',
             ],
             'list' => [
-                'format' => 'hide',
+                'format' => 'none',
             ],
             'detail' => [
-                'format' => 'hide',
+                'format' => 'none',
             ],
             'default' => '',
             'filterable' => '1',
