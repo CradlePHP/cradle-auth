@@ -84,28 +84,52 @@ class Validator
      */
     public static function getLoginErrors(array $data, array $errors = [])
     {
-        $schema = Schema::i('auth');
-
         //auth_slug        Required
         if (!isset($data['auth_slug']) || empty($data['auth_slug'])) {
             $errors['auth_slug'] = 'Cannot be empty';
-        } else if (!$schema->model()->service('sql')->exists('auth_slug', $data['auth_slug'])) {
-            $errors['auth_slug'] = 'User does not exist';
         }
-
-        // check if exists
-        $row = $schema->model()->service('sql')->getResource()
-            ->search($schema->getName())
-            ->addFilter('auth_slug = %s', $data['auth_slug'])
-            ->addFilter('auth_password = %s', md5($data['auth_password']))
-            ->getRow();
 
         //auth_password        Required
         if (!isset($data['auth_password']) || empty($data['auth_password'])) {
             $errors['auth_password'] = 'Cannot be empty';
-        } else if (!isset($errors['auth_password'])) {
-            if (!$row) {
+        } else {
+            $resource = Schema::i('auth')
+                ->model()
+                ->service('sql')
+                ->getResource();
+
+            // check if exists
+            $row = $resource
+                ->search('auth')
+                ->addFilter('auth_slug = %s', $data['auth_slug'])
+                ->getRow();
+
+            // if it is not a valid password
+            if (
+                // both updated hashing
+                !password_verify(
+                    $data['auth_password'],
+                    $row['auth_password']
+                )
+                // and legacy hashing
+                && md5($data['auth_password']) !== $row['auth_password']
+            ) {
+                //report the error
                 $errors['auth_password'] = 'Password is incorrect';
+            } else if (
+                // does the password need to be upgraded?
+                password_needs_rehash(
+                    $row['auth_password'],
+                    PASSWORD_DEFAULT
+                )
+            ) {
+                //upgrade the hash in the database
+                $row['auth_password'] = password_hash(
+                    $data['auth_password'],
+                    PASSWORD_DEFAULT
+                );
+
+                $resource->model($row)->save('auth');
             }
         }
 
