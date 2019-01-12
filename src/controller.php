@@ -128,6 +128,15 @@ $this->get('/auth/login', function ($request, $response) {
     //Prepare body
     $data = ['item' => $request->getPost()];
 
+    $package = $this->package('cradlephp/cradle-auth');
+    $attempts = $package->getAttempts($request);
+
+    if (count($attempts) > 2) {
+        //add Captcha
+        $this->trigger('captcha-load', $request, $response);
+        $data['captcha'] = $response->getResults('captcha');
+    }
+
     //add CSRF
     $this->trigger('csrf-load', $request, $response);
     $data['csrf'] = $response->getResults('csrf');
@@ -624,10 +633,40 @@ $this->post('/auth/login', function ($request, $response) {
 
     //----------------------------//
     // 2. Security Checks
+    $package = $this->package('cradlephp/cradle-auth');
+    $attempts = $package->getAttempts($request);
+
+    if (count($attempts) > 4) {
+        //add attempt
+        $package->addAttempt($request);
+        $wait = $package->waitFor($request);
+
+        if ($wait) {
+            $message = sprintf(
+                'Too many log in attempts please wait %s minutes before trying again.',
+                number_format(ceil($wait / 60))
+            );
+
+            $response->setError(true, $message);
+            return $this->routeTo('get', $route, $request, $response);
+        }
+    } else if (count($attempts) > 2) {
+        //captcha check
+        $this->trigger('captcha-validate', $request, $response);
+
+        if ($response->isError()) {
+            //add attempt
+            $package->addAttempt($request);
+            return $this->routeTo('get', $route, $request, $response);
+        }
+    }
+
     //csrf check
     $this->trigger('csrf-validate', $request, $response);
 
     if ($response->isError()) {
+        //add attempt
+        $package->addAttempt($request);
         return $this->routeTo('get', $route, $request, $response);
     }
 
@@ -641,18 +680,23 @@ $this->post('/auth/login', function ($request, $response) {
     //----------------------------//
     // 5. Interpret Results
     if ($response->isError()) {
+        //add attempt
+        $package->addAttempt($request);
         return $this->routeTo('get', $route, $request, $response);
     }
 
     // if account is not activated
     if ($response->getResults('auth_active') == 0) {
+        //add attempt
+        $package->addAttempt($request);
         // set message
         $this->package('global')->flash('Your account is not activated.', 'warning');
         // set redirect
-        $this->package('global')->redirect('/auth/login');
+        return $this->package('global')->redirect('/auth/login');
     }
 
     //it was good
+    $package->clearAttempts($request);
     //store to session
     //TODO: Sessions for clusters
     $request->setSession('me', $response->getResults());
