@@ -9,7 +9,7 @@ return [
     'fields' => [
         [
             'disable' => '1',
-            'label' => 'Slug',
+            'label' => 'Email',
             'name' => 'slug',
             'field' => [
                 'type' => 'text',

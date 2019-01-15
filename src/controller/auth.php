@@ -69,12 +69,12 @@ $this->get('/auth/signup', function ($request, $response) {
     $class = 'page-auth-signup';
     $title = $this->package('global')->translate('Sign Up');
 
-    $template = __DIR__ . '/template';
+    $template = dirname(__DIR__) . '/template';
     if (is_dir($response->getPage('template_root'))) {
         $template = $response->getPage('template_root');
     }
 
-    $partials = __DIR__ . '/template';
+    $partials = dirname(__DIR__) . '/template';
     if (is_dir($response->getPage('partials_root'))) {
         $partials = $response->getPage('partials_root');
     }
@@ -130,8 +130,9 @@ $this->get('/auth/login', function ($request, $response) {
 
     $package = $this->package('cradlephp/cradle-auth');
     $attempts = $package->getAttempts($request);
+    $authConfig = $package->config();
 
-    if (count($attempts) > 2) {
+    if (count($attempts) >= $authConfig['captcha']) {
         //add Captcha
         $this->trigger('captcha-load', $request, $response);
         $data['captcha'] = $response->getResults('captcha');
@@ -154,12 +155,12 @@ $this->get('/auth/login', function ($request, $response) {
     $class = 'page-auth-login';
     $title = $this->package('global')->translate('Log In');
 
-    $template = __DIR__ . '/template';
+    $template = dirname(__DIR__) . '/template';
     if (is_dir($response->getPage('template_root'))) {
         $template = $response->getPage('template_root');
     }
 
-    $partials = __DIR__ . '/template';
+    $partials = dirname(__DIR__) . '/template';
     if (is_dir($response->getPage('partials_root'))) {
         $partials = $response->getPage('partials_root');
     }
@@ -269,12 +270,12 @@ $this->get('/auth/account', function ($request, $response) {
     $class = 'page-auth-account';
     $title = $this->package('global')->translate('Account Settings');
 
-    $template = __DIR__ . '/template';
+    $template = dirname(__DIR__) . '/template';
     if (is_dir($response->getPage('template_root'))) {
         $template = $response->getPage('template_root');
     }
 
-    $partials = __DIR__ . '/template';
+    $partials = dirname(__DIR__) . '/template';
     if (is_dir($response->getPage('partials_root'))) {
         $partials = $response->getPage('partials_root');
     }
@@ -326,6 +327,16 @@ $this->get('/auth/forgot', function ($request, $response) {
     //Prepare body
     $data = ['item' => $request->getPost()];
 
+    $package = $this->package('cradlephp/cradle-auth');
+    $attempts = $package->getAttempts($request);
+    $authConfig = $package->config();
+
+    if (count($attempts) >= $authConfig['captcha']) {
+        //add Captcha
+        $this->trigger('captcha-load', $request, $response);
+        $data['captcha'] = $response->getResults('captcha');
+    }
+
     //add CSRF
     $this->trigger('csrf-load', $request, $response);
     $data['csrf'] = $response->getResults('csrf');
@@ -341,12 +352,12 @@ $this->get('/auth/forgot', function ($request, $response) {
     $class = 'page-auth-forgot';
     $title = $this->package('global')->translate('Forgot Password');
 
-    $template = __DIR__ . '/template';
+    $template = dirname(__DIR__) . '/template';
     if (is_dir($response->getPage('template_root'))) {
         $template = $response->getPage('template_root');
     }
 
-    $partials = __DIR__ . '/template';
+    $partials = dirname(__DIR__) . '/template';
     if (is_dir($response->getPage('partials_root'))) {
         $partials = $response->getPage('partials_root');
     }
@@ -427,12 +438,12 @@ $this->get('/auth/recover/:auth_id/:hash', function ($request, $response) {
     $class = 'page-auth-recover';
     $title = $this->package('global')->translate('Recover Password');
 
-    $template = __DIR__ . '/template';
+    $template = dirname(__DIR__) . '/template';
     if (is_dir($response->getPage('template_root'))) {
         $template = $response->getPage('template_root');
     }
 
-    $partials = __DIR__ . '/template';
+    $partials = dirname(__DIR__) . '/template';
     if (is_dir($response->getPage('partials_root'))) {
         $partials = $response->getPage('partials_root');
     }
@@ -483,6 +494,16 @@ $this->get('/auth/verify', function ($request, $response) {
     //Prepare body
     $data = ['item' => $request->getPost()];
 
+    $package = $this->package('cradlephp/cradle-auth');
+    $attempts = $package->getAttempts($request);
+    $authConfig = $package->config();
+
+    if (count($attempts) >= $authConfig['captcha']) {
+        //add Captcha
+        $this->trigger('captcha-load', $request, $response);
+        $data['captcha'] = $response->getResults('captcha');
+    }
+
     //add CSRF
     $this->trigger('csrf-load', $request, $response);
     $data['csrf'] = $response->getResults('csrf');
@@ -498,12 +519,12 @@ $this->get('/auth/verify', function ($request, $response) {
     $class = 'page-auth-verify';
     $title = $this->package('global')->translate('Verify Account');
 
-    $template = __DIR__ . '/template';
+    $template = dirname(__DIR__) . '/template';
     if (is_dir($response->getPage('template_root'))) {
         $template = $response->getPage('template_root');
     }
 
-    $partials = __DIR__ . '/template';
+    $partials = dirname(__DIR__) . '/template';
     if (is_dir($response->getPage('partials_root'))) {
         $partials = $response->getPage('partials_root');
     }
@@ -635,22 +656,23 @@ $this->post('/auth/login', function ($request, $response) {
     // 2. Security Checks
     $package = $this->package('cradlephp/cradle-auth');
     $attempts = $package->getAttempts($request);
+    $authConfig = $package->config();
 
-    if (count($attempts) > 4) {
+    if (count($attempts) >= $authConfig['lockout']) {
         //add attempt
         $package->addAttempt($request);
         $wait = $package->waitFor($request);
 
         if ($wait) {
             $message = sprintf(
-                'Too many log in attempts please wait %s minutes before trying again.',
+                'Too many submission attempts please wait %s minutes before trying again.',
                 number_format(ceil($wait / 60))
             );
 
             $response->setError(true, $message);
             return $this->routeTo('get', $route, $request, $response);
         }
-    } else if (count($attempts) > 2) {
+    } else if (count($attempts) >= $authConfig['captcha']) {
         //captcha check
         $this->trigger('captcha-validate', $request, $response);
 
@@ -743,10 +765,41 @@ $this->post('/auth/forgot', function ($request, $response) {
 
     //----------------------------//
     // 2. Security Checks
+    $package = $this->package('cradlephp/cradle-auth');
+    $attempts = $package->getAttempts($request);
+    $authConfig = $package->config();
+
+    if (count($attempts) >= $authConfig['lockout']) {
+        //add attempt
+        $package->addAttempt($request);
+        $wait = $package->waitFor($request);
+
+        if ($wait) {
+            $message = sprintf(
+                'Too many submission attempts please wait %s minutes before trying again.',
+                number_format(ceil($wait / 60))
+            );
+
+            $response->setError(true, $message);
+            return $this->routeTo('get', $route, $request, $response);
+        }
+    } else if (count($attempts) > $authConfig['captcha']) {
+        //captcha check
+        $this->trigger('captcha-validate', $request, $response);
+
+        if ($response->isError()) {
+            //add attempt
+            $package->addAttempt($request);
+            return $this->routeTo('get', $route, $request, $response);
+        }
+    }
+
     //csrf check
     $this->trigger('csrf-validate', $request, $response);
 
     if ($response->isError()) {
+        //add attempt
+        $package->addAttempt($request);
         return $this->routeTo('get', $route, $request, $response);
     }
 
@@ -760,11 +813,13 @@ $this->post('/auth/forgot', function ($request, $response) {
     //----------------------------//
     // 5. Interpret Results
     if ($response->isError()) {
+        //add attempt
+        $package->addAttempt($request);
         return $this->routeTo('get', $route, $request, $response);
     }
 
     //its good
-
+    $package->clearAttempts($request);
     //if we dont want to redirect
     if ($redirect === 'false') {
         return;
@@ -889,10 +944,32 @@ $this->post('/auth/signup', function ($request, $response) {
 
     //----------------------------//
     // 2. Security Checks
+    $package = $this->package('cradlephp/cradle-auth');
+    $attempts = $package->getAttempts($request);
+    $authConfig = $package->config();
+
+    if (count($attempts) >= $authConfig['lockout']) {
+        //add attempt
+        $package->addAttempt($request);
+        $wait = $package->waitFor($request);
+
+        if ($wait) {
+            $message = sprintf(
+                'Too many submission attempts please wait %s minutes before trying again.',
+                number_format(ceil($wait / 60))
+            );
+
+            $response->setError(true, $message);
+            return $this->routeTo('get', $route, $request, $response);
+        }
+    }
+
     //csrf check
     $this->trigger('csrf-validate', $request, $response);
 
     if ($response->isError()) {
+        //add attempt
+        $package->addAttempt($request);
         return $this->routeTo('get', $route, $request, $response);
     }
 
@@ -900,6 +977,8 @@ $this->post('/auth/signup', function ($request, $response) {
     $this->trigger('captcha-validate', $request, $response);
 
     if ($response->isError()) {
+        //add attempt
+        $package->addAttempt($request);
         return $this->routeTo('get', $route, $request, $response);
     }
 
@@ -913,8 +992,13 @@ $this->post('/auth/signup', function ($request, $response) {
     //----------------------------//
     // 5. Interpret Results
     if ($response->isError()) {
+        //add attempt
+        $package->addAttempt($request);
         return $this->routeTo('get', $route, $request, $response);
     }
+
+    //its good
+    $package->clearAttempts($request);
 
     //if we dont want to redirect
     if ($redirect === 'false') {
@@ -956,10 +1040,41 @@ $this->post('/auth/verify', function ($request, $response) {
 
     //----------------------------//
     // 2. Security Checks
+    $package = $this->package('cradlephp/cradle-auth');
+    $attempts = $package->getAttempts($request);
+    $authConfig = $package->config();
+
+    if (count($attempts) >= $authConfig['lockout']) {
+        //add attempt
+        $package->addAttempt($request);
+        $wait = $package->waitFor($request);
+
+        if ($wait) {
+            $message = sprintf(
+                'Too many submission attempts please wait %s minutes before trying again.',
+                number_format(ceil($wait / 60))
+            );
+
+            $response->setError(true, $message);
+            return $this->routeTo('get', $route, $request, $response);
+        }
+    } else if (count($attempts) > $authConfig['captcha']) {
+        //captcha check
+        $this->trigger('captcha-validate', $request, $response);
+
+        if ($response->isError()) {
+            //add attempt
+            $package->addAttempt($request);
+            return $this->routeTo('get', $route, $request, $response);
+        }
+    }
+
     //csrf check
     $this->trigger('csrf-validate', $request, $response);
 
     if ($response->isError()) {
+        //add attempt
+        $package->addAttempt($request);
         return $this->routeTo('get', $route, $request, $response);
     }
 
@@ -973,8 +1088,13 @@ $this->post('/auth/verify', function ($request, $response) {
     //----------------------------//
     // 4. Interpret Results
     if ($response->isError()) {
+        //add attempt
+        $package->addAttempt($request);
         return $this->routeTo('get', $route, $request, $response);
     }
+
+    //its good
+    $package->clearAttempts($request);
 
     //determine redirect
     $redirect = '/auth/verify';

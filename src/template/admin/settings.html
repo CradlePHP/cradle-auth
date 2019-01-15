@@ -1,0 +1,505 @@
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="/admin">
+                <i class="fas fa-home"></i> {{_ 'Admin'}}
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="search">
+                <i class="fas fa-{{schema.icon}}"></i> {{schema.plural}}
+            </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            <i class="fas fa-cogs"></i> {{_ 'Settings'}}
+        </li>
+    </ol>
+</nav>
+
+<div class="main-padding">
+    <h3><i class="fas fa-cogs"></i> {{_ 'Authentication Settings'}}</h3>
+    <form method="post">
+        <div class="box">
+            <div class="box-head box-primary">
+                <div class="box-title">
+                    <i class="fab fa-facebook"></i>
+                    {{_ 'Facebook Settings'}}
+                </div>
+            </div>
+
+            <div class="box-body box-padding">
+                <!-- START: Facebook active -->
+                <div class="form-group{{#if errors.service.facebook.active}} has-error{{/if}}">
+                    <div>
+                        <input
+                            name="service[facebook][active]"
+                            type="hidden"
+                            value="0"
+                        />
+                        <label class="switch switch-5">
+                            <input
+                                class="system-form-control"
+                                name="service[facebook][active]"
+                                type="checkbox"
+                                value="1"
+                                {{#if item.service.facebook.active}}checked{{/if}}
+                            />
+                            <span>{{_ 'Enable Facebook'}}</span>
+                        </label>
+
+                        {{#if errors.service.facebook.active}}
+                            <span class="help-text">{{errors.service.facebook.active}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Facebook active -->
+                <!-- START: Facebook Key -->
+                <div class="form-group{{#if errors.service.facebook.token}} has-error{{/if}}">
+                    <label class="control-label">{{_ 'Facebook Token'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[facebook][token]"
+                            type="text"
+                            value="{{item.service.facebook.token}}"
+                        />
+
+                        {{#if errors.service.facebook.token}}
+                            <span class="help-text">{{errors.service.facebook.token}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Facebook token -->
+                <!-- START: Facebook secret -->
+                <div class="form-group{{#if errors.service.facebook.secret}} has-error{{/if}}">
+                    <label class="control-label">{{_ 'Facebook Secret'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[facebook][secret]"
+                            type="text"
+                            value="{{item.service.facebook.secret}}"
+                        />
+
+                        {{#if errors.service.facebook.secret}}
+                            <span class="help-text">{{errors.service.facebook.secret}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Facebook secret -->
+                <em>
+                    {{#_ 'See: %s for more information on how to get these tokens.'}}
+                        <a
+                            href="https://developers.facebook.com/docs"
+                            target="_blank"
+                        >
+                            https://developers.facebook.com/docs
+                        </a>
+                    {{/_}}
+                </em>
+            </div>
+        </div>
+        <div class="box">
+            <div class="box-head box-info">
+                <div class="box-title">
+                    <i class="fab fa-twitter"></i>
+                    {{_ 'Twitter Settings'}}
+                </div>
+            </div>
+
+            <div class="box-body box-padding">
+                <!-- START: Twitter active -->
+                <div class="form-group{{#if errors.service.twitter.active}} has-error{{/if}}">
+                    <div>
+                        <input
+                            name="service[twitter][active]"
+                            type="hidden"
+                            value="0"
+                        />
+                        <label class="switch switch-5">
+                            <input
+                                class="system-form-control"
+                                name="service[twitter][active]"
+                                type="checkbox"
+                                value="1"
+                                {{#if item.service.twitter.active}}checked{{/if}}
+                            />
+                            <span>{{_ 'Enable Twitter'}}</span>
+                        </label>
+
+                        {{#if errors.service.twitter.active}}
+                            <span class="help-text">{{errors.service.twitter.active}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Twitter active -->
+                <!-- START: Twitter Key -->
+                <div class="form-group{{#if errors.service.twitter.token}} has-error{{/if}}">
+                    <label class="control-label">{{_ 'Twitter Token'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[twitter][token]"
+                            type="text"
+                            value="{{item.service.twitter.token}}"
+                        />
+
+                        {{#if errors.service.twitter.token}}
+                            <span class="help-text">{{errors.service.twitter.token}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Twitter token -->
+                <!-- START: Twitter secret -->
+                <div class="form-group{{#if errors.service.twitter.secret}} has-error{{/if}}">
+                    <label class="control-label">{{_ 'Twitter Secret'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[twitter][secret]"
+                            type="text"
+                            value="{{item.service.twitter.secret}}"
+                        />
+
+                        {{#if errors.service.twitter.secret}}
+                            <span class="help-text">{{errors.service.twitter.secret}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Twitter secret -->
+                <em>
+                    {{#_ 'See: %s for more information on how to get these tokens.'}}
+                        <a
+                            href="https://developer.twitter.com/en/docs"
+                            target="_blank"
+                        >
+                            https://developer.twitter.com/en/docs
+                        </a>
+                    {{/_}}
+                </em>
+            </div>
+        </div>
+        <div class="box">
+            <div class="box-head box-primary">
+                <div class="box-title">
+                    <i class="fab fa-linkedin"></i>
+                    {{_ 'LinkedIn Settings'}}
+                </div>
+            </div>
+
+            <div class="box-body box-padding">
+                <!-- START: LinkedIn active -->
+                <div class="form-group{{#if errors.service.linkedin.active}} has-error{{/if}}">
+                    <div>
+                        <input
+                            name="service[linkedin][active]"
+                            type="hidden"
+                            value="0"
+                        />
+                        <label class="switch switch-5">
+                            <input
+                                class="system-form-control"
+                                name="service[linkedin][active]"
+                                type="checkbox"
+                                value="1"
+                                {{#if item.service.linkedin.active}}checked{{/if}}
+                            />
+                            <span>{{_ 'Enable LinkedIn LinkedIn'}}</span>
+                        </label>
+
+                        {{#if errors.service.linkedin.active}}
+                            <span class="help-text">{{errors.service.linkedin.active}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: LinkedIn active -->
+                <!-- START: LinkedIn Key -->
+                <div class="form-group{{#if errors.service.linkedin.token}} has-error{{/if}}">
+                    <label class="control-label">{{_ 'LinkedIn Token'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[linkedin][token]"
+                            type="text"
+                            value="{{item.service.linkedin.token}}"
+                        />
+
+                        {{#if errors.service.linkedin.token}}
+                            <span class="help-text">{{errors.service.linkedin.token}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: LinkedIn token -->
+                <!-- START: LinkedIn secret -->
+                <div class="form-group{{#if errors.service.linkedin.secret}} has-error{{/if}}">
+                    <label class="control-label">{{_ 'LinkedIn Secret'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[linkedin][secret]"
+                            type="text"
+                            value="{{item.service.linkedin.secret}}"
+                        />
+
+                        {{#if errors.service.linkedin.secret}}
+                            <span class="help-text">{{errors.service.linkedin.secret}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: LinkedIn secret -->
+                <em>
+                    {{#_ 'See: %s for more information on how to get these tokens.'}}
+                        <a
+                            href="https://developer.linkedin.com/docs"
+                            target="_blank"
+                        >
+                            https://developer.linkedin.com/docs
+                        </a>
+                    {{/_}}
+                </em>
+            </div>
+        </div>
+        <div class="box">
+            <div class="box-head box-danger">
+                <div class="box-title">
+                    <i class="fab fa-google"></i>
+                    {{_ 'Google Settings'}}
+                </div>
+            </div>
+
+            <div class="box-body box-padding">
+                <!-- START: Google active -->
+                <div class="form-group{{#if errors.service.google.active}} has-error{{/if}}">
+                    <div>
+                        <input
+                            name="service[google][active]"
+                            type="hidden"
+                            value="0"
+                        />
+                        <label class="switch switch-5">
+                            <input
+                                class="system-form-control"
+                                name="service[google][active]"
+                                type="checkbox"
+                                value="1"
+                                {{#if item.service.google.active}}checked{{/if}}
+                            />
+                            <span>{{_ 'Enable Google'}}</span>
+                        </label>
+
+                        {{#if errors.service.google.active}}
+                            <span class="help-text">{{errors.service.google.active}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Google active -->
+                <!-- START: Google Key -->
+                <div class="form-group{{#if errors.service.google.token}} has-error{{/if}}">
+                    <label class="control-label">{{_ 'Google Token'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[google][token]"
+                            type="text"
+                            value="{{item.service.google.token}}"
+                        />
+
+                        {{#if errors.service.google.token}}
+                            <span class="help-text">{{errors.service.google.token}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Google token -->
+                <!-- START: Google secret -->
+                <div class="form-group{{#if errors.service.google.secret}} has-error{{/if}}">
+                    <label class="control-label">{{_ 'Google Secret'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[google][secret]"
+                            type="text"
+                            value="{{item.service.google.secret}}"
+                        />
+
+                        {{#if errors.service.google.secret}}
+                            <span class="help-text">{{errors.service.google.secret}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Google secret -->
+                <em>
+                    {{#_ 'See: %s for more information on how to get these tokens.'}}
+                        <a
+                            href="https://developers.google.com/identity/protocols/OAuth2"
+                            target="_blank"
+                        >
+                            https://developers.google.com/identity/protocols/OAuth2
+                        </a>
+                    {{/_}}
+                </em>
+            </div>
+        </div>
+        <div class="box">
+            <div class="box-head box-info">
+                <div class="box-title">
+                    <i class="fab fa-google"></i>
+                    {{_ 'CAPTCHA Settings'}}
+                </div>
+            </div>
+
+            <div class="box-body box-padding">
+                <!-- START: CAPTCHA active -->
+                <div class="form-group{{#if errors.service.captcha.active}} has-error{{/if}}">
+                    <div>
+                        <input
+                            name="service[captcha][active]"
+                            type="hidden"
+                            value="0"
+                        />
+                        <label class="switch switch-5">
+                            <input
+                                class="system-form-control"
+                                name="service[captcha][active]"
+                                type="checkbox"
+                                value="1"
+                                {{#if item.service.captcha.active}}checked{{/if}}
+                            />
+                            <span>{{_ 'Enable Google CAPTCHA'}}</span>
+                        </label>
+
+                        {{#if errors.service.captcha.active}}
+                            <span class="help-text">{{errors.service.captcha.active}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: CAPTCHA active -->
+                <!-- START: CAPTCHA Key -->
+                <div class="form-group{{#if errors.service.captcha.token}} has-error{{/if}}">
+                    <label class="control-label">{{_ 'CAPTCHA Token'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[captcha][token]"
+                            type="text"
+                            value="{{item.service.captcha.token}}"
+                        />
+
+                        {{#if errors.service.captcha.token}}
+                            <span class="help-text">{{errors.service.captcha.token}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: CAPTCHA token -->
+                <!-- START: CAPTCHA secret -->
+                <div class="form-group{{#if errors.service.captcha.secret}} has-error{{/if}}">
+                    <label class="control-label">{{_ 'CAPTCHA Secret'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[captcha][secret]"
+                            type="text"
+                            value="{{item.service.captcha.secret}}"
+                        />
+
+                        {{#if errors.service.captcha.secret}}
+                            <span class="help-text">{{errors.service.captcha.secret}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: CAPTCHA secret -->
+                <em>
+                    {{#_ 'See: %s for more information on how to get these tokens.'}}
+                        <a
+                            href="https://www.google.com/recaptcha/intro/v3.html"
+                            target="_blank"
+                        >
+                            https://www.google.com/recaptcha/intro/v3.html
+                        </a>
+                    {{/_}}
+                </em>
+            </div>
+        </div>
+        <div class="box">
+            <div class="box-head box-success">
+                <div class="box-title">{{_ 'Submission Settings'}}</div>
+            </div>
+
+            <div class="box-body box-padding">
+                <!-- START: Attempts CAPTCHA -->
+                <div class="form-group{{#if errors.submission.attempt.captcha}} has-error{{/if}}">
+                    <label class="control-label">{{_ 'Attempts Before Captcha'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="submission[attempt][captcha]"
+                            type="number"
+                            min="0"
+                            step="1"
+                            value="{{item.submission.attempt.captcha}}"
+                        />
+
+                        {{#if errors.submission.attempt.captcha}}
+                            <span class="help-text">{{errors.submission.attempt.captcha}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Attempts CAPTCHA -->
+                <!-- START: Attempts lockout -->
+                <div class="form-group{{#if errors.submission.attempt.lockout}} has-error{{/if}}">
+                    <label class="control-label">{{_ 'Attempts Before Lockout'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="submission[attempt][lockout]"
+                            type="number"
+                            min="0"
+                            step="1"
+                            value="{{item.submission.attempt.lockout}}"
+                        />
+
+                        {{#if errors.submission.attempt.lockout}}
+                            <span class="help-text">{{errors.submission.attempt.lockout}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Attempts lockout -->
+                <!-- START: Attempts wait -->
+                <div class="form-group{{#if errors.submission.attempt.wait}} has-error{{/if}}">
+                    <label class="control-label">{{_ 'Wait Time After Lock Out, Before Trying Again'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="submission[attempt][wait]"
+                            type="number"
+                            min="0"
+                            step="1"
+                            placeholder="in minutes"
+                            value="{{item.submission.attempt.wait}}"
+                        />
+
+                        {{#if errors.submission.attempt.wait}}
+                            <span class="help-text">{{errors.submission.attempt.wait}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Attempts wait -->
+            </div>
+        </div>
+
+        <input type="hidden" name="csrf" value="{{csrf}}" />
+        <button type="submit" class="btn btn-primary">{{_ 'Submit'}}</button>
+    </form>
+</div>

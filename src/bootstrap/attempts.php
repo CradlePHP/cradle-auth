@@ -16,7 +16,7 @@ return function(RequestInterface $request, ResponseInterface $response) {
      * A helper to manage login attempts
      */
     $package->addMethod('getAttempts', function (RequestInterface $request) {
-        $attempts = $request->getSession('login_attempts');
+        $attempts = $request->getSession('auth_attempts');
 
         if (!is_array($attempts)) {
             $attempts = [];
@@ -29,7 +29,7 @@ return function(RequestInterface $request, ResponseInterface $response) {
      * A helper to manage login attempts
      */
     $package->addMethod('clearAttempts', function (RequestInterface $request) {
-        $request->removeSession('login_attempts');
+        $request->removeSession('auth_attempts');
         return $this;
     });
 
@@ -39,7 +39,7 @@ return function(RequestInterface $request, ResponseInterface $response) {
     $package->addMethod('addAttempt', function (RequestInterface $request) {
         $attempts = $this->getAttempts($request);
         array_unshift($attempts, time());
-        $request->setSession('login_attempts', $attempts);
+        $request->setSession('auth_attempts', $attempts);
         return $attempts;
     });
 
@@ -47,18 +47,45 @@ return function(RequestInterface $request, ResponseInterface $response) {
      * Returns how long someone should wait before logging in again
      */
     $package->addMethod('waitFor', function (RequestInterface $request) {
+        $config = $this->config();
         $attempts = $this->getAttempts($request);
+
         //allow a few attempts
-        if (count($attempts) < 5) {
+        if (count($attempts) < $config['lockout']) {
             return 0;
         }
 
-        $wait = ($attempts[0] +  (60 * 5)) - time();
+        $wait = ($attempts[0] +  (60 * $config['wait'])) - time();
 
         if ($wait < 0) {
             $wait = 0;
         }
 
         return $wait;
+    });
+
+    /**
+     * Returns how long someone should wait before logging in again
+     */
+    $package->addMethod('config', function () {
+        $config = cradle('global')->config('auth', 'submission');
+
+        if (!is_array($config)) {
+            $config = [];
+        }
+
+        if (!isset($config['captcha'])) {
+            $config['captcha'] = 2;
+        }
+
+        if (!isset($config['lockout'])) {
+            $config['lockout'] = 5;
+        }
+
+        if (!isset($config['wait'])) {
+            $config['wait'] = 5;
+        }
+
+        return $config;
     });
 };
