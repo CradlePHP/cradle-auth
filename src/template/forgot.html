@@ -37,6 +37,17 @@
                     <a title="Login" href="/auth/login?{{query}}">{{_ 'Wait, I Remember It Now.'}}</a>
                 </div>
                 <!-- END: Login -->
+                {{#if captcha}}
+                    <!-- START: Captcha -->
+                    <div class="form-group{{#if errors.captcha}} has-error{{/if}}">
+                        <script src="https://www.google.com/recaptcha/api.js"></script>
+                        <div class="g-recaptcha" data-sitekey="{{captcha}}"></div>
+                        {{#if errors.captcha}}
+                        <span class="help-text">{{errors.captcha}}</span>
+                        {{/if}}
+                    </div>
+                    <!-- END: Captcha -->
+                {{/if}}
                 <!-- START: Form Submit -->
                 <div class="form-group">
                     <input type="hidden" name="csrf" value="{{csrf}}" />

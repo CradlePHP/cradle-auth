@@ -20,7 +20,8 @@
         "satooshi/php-coveralls": "2.0.0"
     },
     "require": {
-        "cradlephp/cradle-profile": "0.*"
+        "cradlephp/cradle-profile": "~2.2.0",
+        "cradlephp/cradle-captcha": "~2.2.0"
     },
     "autoload": {
         "psr-4": {
