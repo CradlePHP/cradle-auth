@@ -21,7 +21,8 @@
     },
     "require": {
         "cradlephp/cradle-profile": "~2.2.0",
-        "cradlephp/cradle-captcha": "~2.2.0"
+        "cradlephp/cradle-captcha": "~2.2.0",
+        "cradlephp/cradle-queue": "~2.2.0"
     },
     "autoload": {
         "psr-4": {
