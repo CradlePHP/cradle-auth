@@ -5,6 +5,7 @@ return [
     'plural' => 'Authentications',
     'name' => 'auth',
     'icon' => 'fas fa-lock',
+    'group' => 'Users',
     'detail' => 'Collection of verified users.',
     'fields' => [
         [
