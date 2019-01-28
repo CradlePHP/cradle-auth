@@ -103,7 +103,7 @@ $this->on('auth-detail', function ($request, $response) {
  * @param Request $request
  * @param Response $response
  */
-$cradle->on('auth-forgot', function ($request, $response) {
+$this->on('auth-forgot', function ($request, $response) {
     //----------------------------//
     // 1. Get Data
     $this->trigger('auth-detail', $request, $response);
@@ -142,11 +142,13 @@ $cradle->on('auth-forgot', function ($request, $response) {
 
     $request->setStage('host', $protocol . '://' . $request->getServer('HTTP_HOST'));
 
-    //try to queue, and if not
-    //if (!$this->package('global')->queue('auth-forgot-mail', $data)) {
-        //send mail manually
-        $this->trigger('auth-forgot-mail', $request, $response);
-    //}
+    $queuePackage = $this->package('cradlephp/cradle-queue');
+    if (!$queuePackage->queue('auth-forgot-mail', $data)) {
+        //send mail manually after the connection
+        $this->postprocess(function($request, $response) {
+            $this->trigger('auth-forgot-mail', $request, $response);
+        });
+    }
 
     //return response format
     $response->setError(false);
@@ -158,7 +160,7 @@ $cradle->on('auth-forgot', function ($request, $response) {
  * @param Request $request
  * @param Response $response
  */
-$cradle->on('auth-forgot-mail', function ($request, $response) {
+$this->on('auth-forgot-mail', function ($request, $response) {
     $config = $this->package('global')->service('mail-main');
 
     if (!$config) {
@@ -191,16 +193,20 @@ $cradle->on('auth-forgot-mail', function ($request, $response) {
     $subject = $this->package('global')->translate('Password Recovery from Cradle!');
     $handlebars = $this->package('global')->handlebars();
 
-    $contents = file_get_contents(__DIR__ . '/template/email/recover.txt');
-    $template = $handlebars->compile($contents);
-    $text = $template(['link' => $link]);
+    $templateRoot = __DIR__ . '/template/email';
+    if ($request->hasStage('template_root')
+        && is_dir($request->hasStage('template_root'))
+    ) {
+        $templateRoot = $request->getStage('template_root');
+    }
 
-    $contents = file_get_contents(__DIR__ . '/template/email/recover.html');
+    $contents = file_get_contents($templateRoot . '/recover.txt');
     $template = $handlebars->compile($contents);
-    $html = $template([
-        'host' => $host,
-        'link' => $link
-    ]);
+    $text = $template(['host' => $host, 'link' => $link]);
+
+    $contents = file_get_contents($templateRoot . '/recover.html');
+    $template = $handlebars->compile($contents);
+    $html = $template(['host' => $host, 'link' => $link]);
 
     //send mail
     $message = new Swift_Message($subject);
@@ -280,7 +286,7 @@ $this->on('auth-update', function ($request, $response) {
  * @param Request $request
  * @param Response $response
  */
-$cradle->on('auth-login', function ($request, $response) {
+$this->on('auth-login', function ($request, $response) {
     //----------------------------//
     // 1. Get Data
     $data = [];
@@ -310,7 +316,7 @@ $cradle->on('auth-login', function ($request, $response) {
  * @param Request $request
  * @param Response $response
  */
-$cradle->on('auth-recover', function ($request, $response) {
+$this->on('auth-recover', function ($request, $response) {
     //----------------------------//
     // 1. Get Data
     $data = [];
@@ -344,7 +350,7 @@ $cradle->on('auth-recover', function ($request, $response) {
  * @param Request $request
  * @param Response $response
  */
-$cradle->on('auth-verify', function ($request, $response) {
+$this->on('auth-verify', function ($request, $response) {
     //----------------------------//
     // 1. Get Data
     $data = [];
@@ -388,10 +394,13 @@ $cradle->on('auth-verify', function ($request, $response) {
     //----------------------------//
     // 3. Process Data
     //try to queue, and if not
-    //if (!$this->package('global')->queue('auth-verify-mail', $data)) {
-        //send mail manually
-        $this->trigger('auth-verify-mail', $request, $response);
-    //}
+    $queuePackage = $this->package('cradlephp/cradle-queue');
+    if (!$queuePackage->queue('auth-verify-mail', $data)) {
+        //send mail manually after the connection
+        $this->postprocess(function($request, $response) {
+            $this->trigger('auth-verify-mail', $request, $response);
+        });
+    }
 
     //return response format
     $response->setError(false);
@@ -403,7 +412,7 @@ $cradle->on('auth-verify', function ($request, $response) {
  * @param Request $request
  * @param Response $response
  */
-$cradle->on('auth-verify-mail', function ($request, $response) {
+$this->on('auth-verify-mail', function ($request, $response) {
     $config = $this->package('global')->service('mail-main');
 
     if (!$config) {
@@ -436,16 +445,20 @@ $cradle->on('auth-verify-mail', function ($request, $response) {
     $subject = $this->package('global')->translate('Account Verification from Cradle!');
     $handlebars = $this->package('global')->handlebars();
 
-    $contents = file_get_contents(__DIR__ . '/template/email/verify.txt');
-    $template = $handlebars->compile($contents);
-    $text = $template(['link' => $link]);
+    $templateRoot = __DIR__ . '/template/email';
+    if ($request->hasStage('template_root')
+        && is_dir($request->hasStage('template_root'))
+    ) {
+        $templateRoot = $request->getStage('template_root');
+    }
 
-    $contents = file_get_contents(__DIR__ . '/template/email/verify.html');
+    $contents = file_get_contents($templateRoot . '/verify.txt');
     $template = $handlebars->compile($contents);
-    $html = $template([
-        'host' => $host,
-        'link' => $link
-    ]);
+    $text = $template(['host' => $host, 'link' => $link]);
+
+    $contents = file_get_contents($templateRoot . '/verify.html');
+    $template = $handlebars->compile($contents);
+    $html = $template(['host' => $host, 'link' => $link]);
 
     //send mail
     $message = new Swift_Message($subject);
