@@ -848,6 +848,11 @@ $this->post('/auth/forgot', function ($request, $response) {
 $this->post('/auth/recover/:auth_id/:hash', function ($request, $response) {
     //----------------------------//
     // 1. Setup Overrides
+    //form hash
+    $authId = $response->getResults('auth_id');
+    $authUpdated = $response->getResults('auth_updated');
+    $hash = md5($authId.$authUpdated);
+
     //determine route
     $route = sprintf('/auth/recover/%s/%s', $authId, $hash);
     if ($request->hasStage('route')) {
