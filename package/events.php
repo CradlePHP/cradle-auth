@@ -86,10 +86,28 @@ $this->on('cradlephp-cradle-auth-update', function ($request, $response) {
     // get available version
     $version = $this->package($name)->version();
 
-    //if available <= current
-    if (version_compare($version, $current, '<=')) {
-        $message = sprintf('%s %s <= %s', $name, $version, $current);
+    //if available < current
+    if (version_compare($version, $current, '<')) {
+        $message = sprintf('%s < %s', $version, $current);
+        $response->setResults('logs', 'cradlephp/cradle-auth', $version, [
+            [
+                'type' => 'error',
+                'message' => $message
+            ]
+        ]);
+
         return $response->setError(true, $message);
+    //if available = current
+    } else if (version_compare($version, $current, '=')) {
+        $message = sprintf('%s = %s', $version, $current);
+        $response->setResults('logs', 'cradlephp/cradle-auth', $version, [
+            [
+                'type' => 'error',
+                'message' => $message
+            ]
+        ]);
+
+        return;
     }
 
     // update package
