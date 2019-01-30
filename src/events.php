@@ -81,6 +81,11 @@ $this->on('auth-create', function ($request, $response) {
 
     //trigger model create
     $this->trigger('system-model-create', $request, $response);
+
+    //remove password, confirm
+    $response
+        ->removeResults('auth_password')
+        ->removeResults('confirm');
 });
 
 /**
@@ -278,6 +283,11 @@ $this->on('auth-update', function ($request, $response) {
 
     //trigger model search
     $this->trigger('system-model-update', $request, $response);
+
+    //remove password, confirm
+    $response
+        ->removeResults('auth_password')
+        ->removeResults('confirm');
 });
 
 /**
@@ -308,6 +318,11 @@ $this->on('auth-login', function ($request, $response) {
     //----------------------------//
     // 3. Process Data
     $this->trigger('auth-detail', $request, $response);
+
+    //remove password, confirm
+    $response
+        ->removeResults('auth_password')
+        ->removeResults('confirm');
 });
 
 /**
@@ -342,6 +357,11 @@ $this->on('auth-recover', function ($request, $response) {
 
     //return response format
     $response->setError(false);
+
+    //remove password, confirm
+    $response
+        ->removeResults('auth_password')
+        ->removeResults('confirm');
 });
 
 /**
@@ -404,6 +424,11 @@ $this->on('auth-verify', function ($request, $response) {
 
     //return response format
     $response->setError(false);
+
+    //remove password, confirm
+    $response
+        ->removeResults('auth_password')
+        ->removeResults('confirm');
 });
 
 /**
