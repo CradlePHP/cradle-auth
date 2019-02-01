@@ -156,7 +156,10 @@ $this->on('auth-forgot', function ($request, $response) {
     }
 
     //return response format
-    $response->setError(false);
+    $response
+        ->setError(false)
+        ->removeResults('auth_password')
+        ->removeResults('confirm');
 });
 
 /**
@@ -423,10 +426,8 @@ $this->on('auth-verify', function ($request, $response) {
     }
 
     //return response format
-    $response->setError(false);
-
-    //remove password, confirm
     $response
+        ->setError(false)
         ->removeResults('auth_password')
         ->removeResults('confirm');
 });
