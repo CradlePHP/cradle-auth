@@ -199,6 +199,11 @@ $this->on('auth-forgot-mail', function ($request, $response) {
     $to[$request->getStage('auth_slug')] = null;
 
     $subject = $this->package('global')->translate('Password Recovery from Cradle!');
+
+    if ($request->getStage('subject')) {
+        $subject = $this->package('global')->translate($request->getStage('subject'));
+    }
+
     $handlebars = $this->package('global')->handlebars();
 
     $templateRoot = __DIR__ . '/template/email';
@@ -469,6 +474,11 @@ $this->on('auth-verify-mail', function ($request, $response) {
     $to[$request->getStage('auth_slug')] = null;
 
     $subject = $this->package('global')->translate('Account Verification from Cradle!');
+
+    if ($request->getStage('subject')) {
+        $subject = $this->package('global')->translate($request->getStage('subject'));
+    }
+    
     $handlebars = $this->package('global')->handlebars();
 
     $templateRoot = __DIR__ . '/template/email';
