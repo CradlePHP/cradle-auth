@@ -203,7 +203,7 @@ $this->on('auth-forgot-mail', function ($request, $response) {
 
     $templateRoot = __DIR__ . '/template/email';
     if ($request->hasStage('template_root')
-        && is_dir($request->hasStage('template_root'))
+        && is_dir($request->getStage('template_root'))
     ) {
         $templateRoot = $request->getStage('template_root');
     }
@@ -473,7 +473,7 @@ $this->on('auth-verify-mail', function ($request, $response) {
 
     $templateRoot = __DIR__ . '/template/email';
     if ($request->hasStage('template_root')
-        && is_dir($request->hasStage('template_root'))
+        && is_dir($request->getStage('template_root'))
     ) {
         $templateRoot = $request->getStage('template_root');
     }
