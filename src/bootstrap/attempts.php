@@ -9,7 +9,7 @@
 use Cradle\Http\Request\RequestInterface;
 use Cradle\Http\Response\ResponseInterface;
 
-return function(RequestInterface $request, ResponseInterface $response) {
+return function (RequestInterface $request, ResponseInterface $response) {
     $package = $this->package('cradlephp/cradle-auth');
 
     /**

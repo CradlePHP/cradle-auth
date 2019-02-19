@@ -16,11 +16,11 @@ $this->on('auth-create', function ($request, $response) {
     //----------------------------//
     // 1. Get Data
     $data = [];
-    if($request->hasStage()) {
+    if ($request->hasStage()) {
         $data = $request->getStage();
     }
 
-    if(!isset($data['auth_active'])) {
+    if (!isset($data['auth_active'])) {
         $request->setStage('auth_active', 0);
     }
 
@@ -150,7 +150,7 @@ $this->on('auth-forgot', function ($request, $response) {
     $queuePackage = $this->package('cradlephp/cradle-queue');
     if (!$queuePackage->queue('auth-forgot-mail', $data)) {
         //send mail manually after the connection
-        $this->postprocess(function($request, $response) {
+        $this->postprocess(function ($request, $response) {
             $this->trigger('auth-forgot-mail', $request, $response);
         });
     }
@@ -425,7 +425,7 @@ $this->on('auth-verify', function ($request, $response) {
     $queuePackage = $this->package('cradlephp/cradle-queue');
     if (!$queuePackage->queue('auth-verify-mail', $data)) {
         //send mail manually after the connection
-        $this->postprocess(function($request, $response) {
+        $this->postprocess(function ($request, $response) {
             $this->trigger('auth-verify-mail', $request, $response);
         });
     }
@@ -478,7 +478,7 @@ $this->on('auth-verify-mail', function ($request, $response) {
     if ($request->getStage('subject')) {
         $subject = $this->package('global')->translate($request->getStage('subject'));
     }
-    
+
     $handlebars = $this->package('global')->handlebars();
 
     $templateRoot = __DIR__ . '/template/email';
