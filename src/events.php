@@ -146,6 +146,7 @@ $this->on('auth-forgot', function ($request, $response) {
     }
 
     $request->setStage('host', $protocol . '://' . $request->getServer('HTTP_HOST'));
+    $data = $request->getStage();
 
     $queuePackage = $this->package('cradlephp/cradle-queue');
     if (!$queuePackage->queue('auth-forgot-mail', $data)) {
