@@ -79,11 +79,37 @@
             </form>
             <!-- END: Auth Login Form -->
 
-            <!-- START: Login With Facebook Option -->
-            <div class="form-group">
+           
+            <div class="form-group social-login">
                 <p class="text-center or-text">{{_ 'or'}}</p>
+                {{#if services.facebook-main.active}}
+                    <!-- START: Login With Facebook Option -->
+                    <a
+                        class="btn btn-primary btn-facebook"
+                        href="/auth/sso/login/facebook"
+                        title="{{_ 'Log In with %s' 'Facebook'}}"
+                        id="login-facebook-button"
+                    >
+                        <span class="fab fa-facebook-f"></span>
+                        {{_ 'Log in with %s' 'Facebook'}}
+                    </a>
+                    <!-- END: Login With Facebook Option -->
+                {{/if}}
+
+                {{#if services.google-main.active}}
+                    <!-- START: Login With Google Option -->
+                    <a
+                        class="btn btn-primary btn-google"
+                        href="/auth/sso/login/google"
+                        title="{{_ 'Log In with %s' 'Google'}}"
+                        id="login-google-button"
+                    >
+                        <span class="fab fa-google"></span>
+                        {{_ 'Log in with %s' 'Google'}}
+                    </a>
+                    <!-- END: Login With Google Option -->
+                {{/if}}
             </div>
-            <!-- END: Login With Facebook Option -->
             <!-- START: Signup Option -->
             <div class="form-group">
                 <p class="text-muted text-center">

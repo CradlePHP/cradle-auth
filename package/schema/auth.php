@@ -85,6 +85,21 @@ return [
         ],
         [
             'disable' => '1',
+            'label' => 'Tokens',
+            'name' => 'tokens',
+            'field' => [
+                'type' => 'rawjson'
+            ],
+            'list' => [
+                'format' => 'hide'
+            ],
+            'detail' => [
+                'format' => 'hide'
+            ],
+            'default' => ''
+        ],
+        [
+            'disable' => '1',
             'label' => 'Type',
             'name' => 'type',
             'field' => [

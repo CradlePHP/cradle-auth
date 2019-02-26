@@ -53,43 +53,118 @@
                     </div>
                 </div>
                 <!-- END: Facebook active -->
-                <!-- START: Facebook Key -->
-                <div class="form-group{{#if errors.service.facebook.token}} has-error{{/if}}">
+                <!-- START: Facebook client id -->
+                <div class="form-group{{#if errors.service.facebook.client_id}} has-error{{/if}}">
                     <label class="control-label">{{_ 'Facebook Token'}}</label>
                     <div>
                         <input
                             autocomplete="off"
                             class="form-control"
-                            name="service[facebook][token]"
+                            name="service[facebook][client_id]"
                             type="text"
-                            value="{{item.service.facebook.token}}"
+                            value="{{item.service.facebook.client_id}}"
                         />
 
-                        {{#if errors.service.facebook.token}}
-                            <span class="help-text">{{errors.service.facebook.token}}</span>
+                        {{#if errors.service.facebook.client_id}}
+                            <span class="help-text">{{errors.service.facebook.client_id}}</span>
                         {{/if}}
                     </div>
                 </div>
                 <!-- END: Facebook token -->
-                <!-- START: Facebook secret -->
-                <div class="form-group{{#if errors.service.facebook.secret}} has-error{{/if}}">
+                <!-- START: Facebook client_secret -->
+                <div class="form-group{{#if errors.service.facebook.client_secret}} has-error{{/if}}">
                     <label class="control-label">{{_ 'Facebook Secret'}}</label>
                     <div>
                         <input
                             autocomplete="off"
                             class="form-control"
-                            name="service[facebook][secret]"
+                            name="service[facebook][client_secret]"
                             type="text"
-                            value="{{item.service.facebook.secret}}"
+                            value="{{item.service.facebook.client_secret}}"
                         />
 
-                        {{#if errors.service.facebook.secret}}
-                            <span class="help-text">{{errors.service.facebook.secret}}</span>
+                        {{#if errors.service.facebook.client_secret}}
+                            <span class="help-text">{{errors.service.facebook.client_secret}}</span>
                         {{/if}}
                     </div>
                 </div>
-                <!-- END: Facebook secret -->
-                <em>
+                <!-- END: Facebook Redirect URI --> 
+
+                <!-- START: Facebook URL Authorize -->
+                <div class="hidden">
+                    <label class="control-label">{{_ 'Facebook URL Authorize'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[facebook][url_authorize]"
+                            type="text"
+                            value="
+                            {{~#if item.service.facebook.url_authorize~}}
+                                {{~item.service.facebook.url_authorize~}}
+                            {{~else~}}
+                                http://www.facebook.com/v3.2/dialog/oauth
+                            {{~/if~}}
+                            "
+                        />
+
+                        {{#if errors.service.facebook.url_authorize}}
+                            <span class="help-text">{{errors.service.facebook.url_authorize}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Facebook URL Authorize -->
+    
+                <!-- START: Facebook URL Access Token -->
+                <div class="hidden">
+                    <label class="control-label">{{_ 'Facebook URL Access Token'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[facebook][url_access_token]"
+                            type="text"
+                            value="
+                            {{~#if item.service.facebook.url_access_token~}}
+                                {{~item.service.facebook.url_access_token~}}
+                            {{~else~}}
+                                https://graph.facebook.com/v3.2/oauth/access_token
+                            {{~/if~}}
+                            "
+                        />
+
+                        {{#if errors.service.facebook.url_access_token}}
+                            <span class="help-text">{{errors.service.facebook.url_access_token}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Facebook URL Access Token -->
+
+                <!-- START: Facebook Url Resource -->
+                <div class="hidden">
+                    <label class="control-label">{{_ 'Facebook Url Resource'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[facebook][url_resource]"
+                            type="text"
+                            value="
+                            {{~#if item.service.facebook.url_resource~}}
+                                {{~item.service.facebook.url_resource~}}
+                            {{~else~}}
+                                https://graph.facebook.com
+                            {{~/if~}}
+                            "
+                        />
+
+                        {{#if errors.service.facebook.url_resource}}
+                            <span class="help-text">{{errors.service.facebook.url_resource}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Facebook Url Resource -->
+
                     {{#_ 'See: %s for more information on how to get these tokens.'}}
                         <a
                             href="https://developers.facebook.com/docs"
@@ -101,6 +176,166 @@
                 </em>
             </div>
         </div>
+
+        <div class="box">
+            <div class="box-head box-danger">
+                <div class="box-title">
+                    <i class="fab fa-google"></i>
+                    {{_ 'Google Settings'}}
+                </div>
+            </div>
+
+            <div class="box-body box-padding">
+                <!-- START: Google active -->
+                <div class="form-group{{#if errors.service.google.active}} has-error{{/if}}">
+                    <div>
+                        <input
+                            name="service[google][active]"
+                            type="hidden"
+                            value="0"
+                        />
+                        <label class="switch switch-5">
+                            <input
+                                class="system-form-control"
+                                name="service[google][active]"
+                                type="checkbox"
+                                value="1"
+                                {{#if item.service.google.active}}checked{{/if}}
+                            />
+                            <span>{{_ 'Enable Google'}}</span>
+                        </label>
+
+                        {{#if errors.service.google.active}}
+                            <span class="help-text">{{errors.service.google.active}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Google active -->
+                <!-- START: Google Client Id -->
+                <div class="form-group{{#if errors.service.google.client_id}} has-error{{/if}}">
+                    <label class="control-label">{{_ 'Google Token'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[google][client_id]"
+                            type="text"
+                            value="{{item.service.google.client_id}}"
+                        />
+
+                        {{#if errors.service.google.client_id}}
+                            <span class="help-text">{{errors.service.google.client_id}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Google client_id -->
+                <!-- START: Google Client Secret -->
+                <div class="form-group{{#if errors.service.google.client_secret}} has-error{{/if}}">
+                    <label class="control-label">{{_ 'Google Secret'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[google][client_secret]"
+                            type="text"
+                            value="{{item.service.google.client_secret}}"
+                        />
+
+                        {{#if errors.service.google.client_secret}}
+                            <span class="help-text">{{errors.service.google.client_secret}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Google client_secret -->
+
+                <!-- START: Google URL Authorize -->
+                <div class="hidden">
+                    <label class="control-label">{{_ 'Google URL Authorize'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[google][url_authorize]"
+                            type="text"
+                            value="
+                            {{~#if item.service.google.url_authorize~}}
+                                {{~item.service.google.url_authorize~}}
+                            {{~else~}}
+                                https://accounts.google.com/o/oauth2/v2/auth
+                            {{~/if~}}
+                            "
+                        />
+
+                        {{#if errors.service.google.url_authorize}}
+                            <span class="help-text">{{errors.service.google.url_authorize}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Google URL Authorize -->
+    
+                <!-- START: Google URL Access Token -->
+                <div class="hidden">
+                    <label class="control-label">{{_ 'Google URL Access Token'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[google][url_access_token]"
+                            type="text"
+                            value="
+                            {{~#if item.service.google.url_access_token~}}
+                                {{~item.service.google.url_access_token~}}
+                            {{~else~}}
+                               https://www.googleapis.com/oauth2/v4/token
+                            {{~/if~}}
+                            "
+                        />
+
+                        {{#if errors.service.google.url_access_token}}
+                            <span class="help-text">{{errors.service.google.url_access_token}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Google URL Access Token -->
+
+                <!-- START: Google Url Resource -->
+                <div class="hidden">
+                    <label class="control-label">{{_ 'Google Url Resource'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[google][url_resource]"
+                            type="text"
+                            value="
+                            {{~#if item.service.google.url_resource~}}
+                                {{~item.service.google.url_resource~}}
+                            {{~else~}}
+                                https://www.googleapis.com/userinfo/v2
+                            {{~/if~}}
+                            "
+                        />
+
+                        {{#if errors.service.google.url_resource}}
+                            <span class="help-text">{{errors.service.google.url_resource}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Google Url Resource -->
+
+                <em>
+                    {{#_ 'See: %s for more information on how to get these tokens.'}}
+                        <a
+                            href="https://developers.google.com/identity/protocols/OAuth2"
+                            target="_blank"
+                        >
+                            https://developers.google.com/identity/protocols/OAuth2
+                        </a>
+                    {{/_}}
+                </em>
+            </div>
+        </div>
+
         <div class="box">
             <div class="box-head box-info">
                 <div class="box-title">
@@ -265,88 +500,7 @@
                 </em>
             </div>
         </div>
-        <div class="box">
-            <div class="box-head box-danger">
-                <div class="box-title">
-                    <i class="fab fa-google"></i>
-                    {{_ 'Google Settings'}}
-                </div>
-            </div>
-
-            <div class="box-body box-padding">
-                <!-- START: Google active -->
-                <div class="form-group{{#if errors.service.google.active}} has-error{{/if}}">
-                    <div>
-                        <input
-                            name="service[google][active]"
-                            type="hidden"
-                            value="0"
-                        />
-                        <label class="switch switch-5">
-                            <input
-                                class="system-form-control"
-                                name="service[google][active]"
-                                type="checkbox"
-                                value="1"
-                                {{#if item.service.google.active}}checked{{/if}}
-                            />
-                            <span>{{_ 'Enable Google'}}</span>
-                        </label>
-
-                        {{#if errors.service.google.active}}
-                            <span class="help-text">{{errors.service.google.active}}</span>
-                        {{/if}}
-                    </div>
-                </div>
-                <!-- END: Google active -->
-                <!-- START: Google Key -->
-                <div class="form-group{{#if errors.service.google.token}} has-error{{/if}}">
-                    <label class="control-label">{{_ 'Google Token'}}</label>
-                    <div>
-                        <input
-                            autocomplete="off"
-                            class="form-control"
-                            name="service[google][token]"
-                            type="text"
-                            value="{{item.service.google.token}}"
-                        />
-
-                        {{#if errors.service.google.token}}
-                            <span class="help-text">{{errors.service.google.token}}</span>
-                        {{/if}}
-                    </div>
-                </div>
-                <!-- END: Google token -->
-                <!-- START: Google secret -->
-                <div class="form-group{{#if errors.service.google.secret}} has-error{{/if}}">
-                    <label class="control-label">{{_ 'Google Secret'}}</label>
-                    <div>
-                        <input
-                            autocomplete="off"
-                            class="form-control"
-                            name="service[google][secret]"
-                            type="text"
-                            value="{{item.service.google.secret}}"
-                        />
-
-                        {{#if errors.service.google.secret}}
-                            <span class="help-text">{{errors.service.google.secret}}</span>
-                        {{/if}}
-                    </div>
-                </div>
-                <!-- END: Google secret -->
-                <em>
-                    {{#_ 'See: %s for more information on how to get these tokens.'}}
-                        <a
-                            href="https://developers.google.com/identity/protocols/OAuth2"
-                            target="_blank"
-                        >
-                            https://developers.google.com/identity/protocols/OAuth2
-                        </a>
-                    {{/_}}
-                </em>
-            </div>
-        </div>
+     
         <div class="box">
             <div class="box-head box-info">
                 <div class="box-title">
