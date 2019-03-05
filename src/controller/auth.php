@@ -9,6 +9,7 @@
 
 use Cradle\Package\System\Schema as SystemSchema;
 use Cradle\Module\Utility\File;
+use Cradle\OAuth\OAuth1;
 use Cradle\OAuth\OAuth2;
 
 /**
@@ -1186,14 +1187,14 @@ $cradle->get('/auth/activate/:auth_id/:hash', function ($request, $response) {
  * @param Request $request
  * @param Response $response
  */
-$cradle->get('/auth/sso/login/:type', function ($request, $response) {
-    $type = $request->getStage('type');
+$cradle->get('/auth/sso/login/:service_type', function ($request, $response) {
+    $type = $request->getStage('service_type');
 
     // get config
     $config = $this->package('global')->config('services', $type. '-main');
 
     if (!$config) {
-        $this->package('global')->flash('Invalid Service. Try again.', 'error');
+        $this->package('global')->flash('Invalid Service. Try again!', 'error');
         return $this->package('global')->redirect('/auth/login');
     }
 
@@ -1205,79 +1206,151 @@ $cradle->get('/auth/sso/login/:type', function ($request, $response) {
         }
     }
 
+    //host
+    $host = $protocol . '://' . $request->getServer('HTTP_HOST');
+
+    // if service not active
     if(!$config['active']) {
         $this->package('global')->flash('Service not active.', 'error');
         return $this->package('global')->redirect('/auth/login');
     }
-
-    //host
-    $host = $protocol . '://' . $request->getServer('HTTP_HOST');
-
-    if (!isset($config['client_id']) 
-        || !isset($config['client_secret'])
-        || !isset($config['url_authorize'])
-        || !isset($config['url_access_token'])
-        || !isset($config['url_resource'])
-    ) {
-        $this->package('global')->flash('Invalid Service. Try again.', 'error');
+    
+    // validate sso typeoauth service
+    if (!isset($config['oauth_type'])) {
+        $this->package('global')->flash('Service not active.', 'error');
         return $this->package('global')->redirect('/auth/login');
     }
 
-    // get provider
-    $provider = new OAuth2(
-        $config['client_id'],    // The client ID assigned to you by the provider
-        $config['client_secret'],   // The client password assigned to you by the provider
-        $host . '/auth/sso/login/'. $type,
-        $config['url_authorize'],
-        $config['url_access_token'],
-        $config['url_resource']
-    );
-
-    //if there is not a code
-    if (!$request->hasStage('code')) {
-        if ($request->hasGet('redirect_uri')) {
-            $request->setSession('redirect_uri', $request->getGet('redirect_uri'));
+    // process OAuth1 service
+    if (strtolower($config['oauth_type']) == 'oauth1') {
+        if (!isset($config['client_id']) 
+            || !isset($config['client_secret'])
+            || !isset($config['url_redirect'])
+            || !isset($config['url_request'])
+            || !isset($config['url_authorize'])
+            || !isset($config['url_access_token'])
+        ) {
+            $this->package('global')->flash('Invalid Service. Try again!', 'error');
+            return $this->package('global')->redirect('/auth/login');
         }
 
-        // set scope
-        $provider->setScope('email');
-       
-       // get redirect url
-        $redirect = $provider->getLoginUrl();
+        $params = [];
+        // get provider
+        $provider = new OAuth1(
+            $config['client_id'],    // The client ID assigned to you by the provider
+            $config['client_secret'],   // The client password assigned to you by the provider
+            $config['url_redirect'],
+            $config['url_request'],
+            $config['url_authorize'],
+            $config['url_access_token']
+        );
 
-        //redirect
-        return $this->package('global')->redirect($redirect);
-    }
+         //there's a oauth_token | oauth_verifier
+        if ($request->hasStage('oauth_token') 
+            && $request->hasStage('oauth_verifier')) {
+            // get access tokens
+            $token = $provider->getAccessTokens(
+                $request->getStage('oauth_token'),
+                $config['client_secret'],
+                $request->getStage('oauth_verifier')
+            );
 
-    //there's a code
-    try {
-        $accessToken = $provider->getAccessTokens($request->getStage('code'));
+            // validate access tokens
+            if (!isset($token['oauth_token']) 
+                || !isset($token['oauth_token_secret'])) {
+                cradle('global')->flash('Invalid Token', 'error');
+                return $this->package('global')->redirect('/auth/login');
+            }
+            // set custom parameters
+            if ($type == 'twitter') {
+                 $params = [
+                    'include_email' => 'true',
+                    'skip_status' => 'true',
+                    'include_entities' => 'false'
+                ];
+            }
+           
+            try {
+                // get resource
+                $user = $provider->get($config['url_resource'], $token, $params);
+            } catch (Exception $e) {
+                // When Graph returns an error
+                cradle('global')->flash($e->getMessage(), 'error');
+                return $this->package('global')->redirect('/auth/login');
+            }
+        } else {
+            $tokens = $provider->getRequestTokens();
+            $redirect = $provider->getLoginUrl($tokens['oauth_token']);
+            return cradle('global')->redirect($redirect);
+        }
 
-    } catch (Exception $e) {
-        // When Graph returns an error
-        cradle('global')->flash($e->getMessage(), 'error');
-        return $this->package('global')->redirect('/auth/login');
-    }
+    // process OAuth2 service
+    } else if (strtolower($config['oauth_type']) == 'oauth2'){
+        if (!isset($config['client_id']) 
+            || !isset($config['client_secret'])
+            || !isset($config['url_authorize'])
+            || !isset($config['url_access_token'])
+            || !isset($config['url_resource'])
+        ) {
+            $this->package('global')->flash('Invalid Service. Try again!', 'error');
+            return $this->package('global')->redirect('/auth/login');
+        }
 
-    if (isset($accessToken['error'])) {
-        cradle('global')->flash('Access Token Error', 'error');
-        return $this->package('global')->redirect('/auth/login');
-    }
+        // get provider
+        $provider = new OAuth2(
+            $config['client_id'],    // The client ID assigned to you by the provider
+            $config['client_secret'],   // The client password assigned to you by the provider
+            $host . '/auth/sso/login/'. $type,
+            $config['url_authorize'],
+            $config['url_access_token'],
+            $config['url_resource']
+        );
 
-    $token = (string) $accessToken['access_token'];
+        //if there is not a code
+        if (!$request->hasStage('code')) {
+            if ($request->hasGet('redirect_uri')) {
+                $request->setSession('redirect_uri', $request->getGet('redirect_uri'));
+            }
 
-    // set fields
-    $fields = [
-        'fields' => 'id,name,email'
-    ];
+            // set scope
+            $provider->setScope('email');
+           
+           // get redirect url
+            $redirect = $provider->getLoginUrl();
 
-    // Now you can redirect to another page and use the
-    // access token from $token
-    try {
-        $user = $provider->get('/me', $token, $fields);
-    } catch (Exception $e) {
-        cradle('global')->flash($e->getMessage(), 'error');
-        return $this->package('global')->redirect('/auth/login');
+            //redirect
+            return $this->package('global')->redirect($redirect);
+        }
+
+        //there's a code
+        try {
+            $accessToken = $provider->getAccessTokens($request->getStage('code'));
+        } catch (Exception $e) {
+            // When Graph returns an error
+            cradle('global')->flash($e->getMessage(), 'error');
+            return $this->package('global')->redirect('/auth/login');
+        }
+
+        if (isset($accessToken['error'])) {
+            cradle('global')->flash('Access Token Error', 'error');
+            return $this->package('global')->redirect('/auth/login');
+        }
+
+        $token = (string) $accessToken['access_token'];
+
+        // set fields
+        $fields = [
+            'fields' => 'id,name,email'
+        ];
+
+        // Now you can redirect to another page and use the
+        // access token from $token
+        try {
+            $user = $provider->get('/me', $token, $fields);
+        } catch (Exception $e) {
+            cradle('global')->flash($e->getMessage(), 'error');
+            return $this->package('global')->redirect('/auth/login');
+        }
     }
 
     //set some defaults

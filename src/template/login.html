@@ -96,6 +96,20 @@
                     <!-- END: Login With Facebook Option -->
                 {{/if}}
 
+                {{#if services.twitter-main.active}}
+                    <!-- START: Login With Twitter Option -->
+                    <a
+                        class="btn btn-primary btn-twitter"
+                        href="/auth/sso/login/twitter"
+                        title="{{_ 'Log In with %s' 'Twitter'}}"
+                        id="login-twitter-button"
+                    >
+                        <span class="fab fa-twitter"></span>
+                        {{_ 'Log in with %s' 'Twiiter'}}
+                    </a>
+                    <!-- END: Login With Twitter Option -->
+                {{/if}}
+
                 {{#if services.google-main.active}}
                     <!-- START: Login With Google Option -->
                     <a

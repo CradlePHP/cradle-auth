@@ -165,6 +165,30 @@
                 </div>
                 <!-- END: Facebook Url Resource -->
 
+                <!-- START: Facebook OAuth Type -->
+                <div class="hidden">
+                    <label class="control-label">{{_ 'Facebook OAuth Type'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[facebook][oauth_type]"
+                            type="text"
+                            value="
+                            {{~#if item.service.facebook.oauth_type~}}
+                                {{~item.service.facebook.oauth_type~}}
+                            {{~else~}}
+                                https://graph.facebook.com
+                            {{~/if~}}
+                            "
+                        />
+
+                        {{#if errors.service.facebook.oauth_type}}
+                            <span class="help-text">{{errors.service.facebook.oauth_type}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Facebook OAuth Type -->
                     {{#_ 'See: %s for more information on how to get these tokens.'}}
                         <a
                             href="https://developers.facebook.com/docs"
@@ -322,7 +346,30 @@
                     </div>
                 </div>
                 <!-- END: Google Url Resource -->
+                <!-- START: Google OAuth Type -->
+                <div class="hidden">
+                    <label class="control-label">{{_ 'Google OAuth Type'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[google][oauth_type]"
+                            type="text"
+                            value="
+                            {{~#if item.service.google.oauth_type~}}
+                                {{~item.service.google.oauth_type~}}
+                            {{~else~}}
+                                https://graph.google.com
+                            {{~/if~}}
+                            "
+                        />
 
+                        {{#if errors.service.google.oauth_type}}
+                            <span class="help-text">{{errors.service.google.oauth_type}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Google OAuth Type -->
                 <em>
                     {{#_ 'See: %s for more information on how to get these tokens.'}}
                         <a
@@ -370,42 +417,191 @@
                     </div>
                 </div>
                 <!-- END: Twitter active -->
-                <!-- START: Twitter Key -->
-                <div class="form-group{{#if errors.service.twitter.token}} has-error{{/if}}">
+                <!-- START: Twitter Client Id -->
+                <div class="form-group{{#if errors.service.twitter.client_id}} has-error{{/if}}">
                     <label class="control-label">{{_ 'Twitter Token'}}</label>
                     <div>
                         <input
                             autocomplete="off"
                             class="form-control"
-                            name="service[twitter][token]"
+                            name="service[twitter][client_id]"
                             type="text"
-                            value="{{item.service.twitter.token}}"
+                            value="{{item.service.twitter.client_id}}"
                         />
 
-                        {{#if errors.service.twitter.token}}
-                            <span class="help-text">{{errors.service.twitter.token}}</span>
+                        {{#if errors.service.twitter.client_id}}
+                            <span class="help-text">{{errors.service.twitter.client_id}}</span>
                         {{/if}}
                     </div>
                 </div>
-                <!-- END: Twitter token -->
-                <!-- START: Twitter secret -->
-                <div class="form-group{{#if errors.service.twitter.secret}} has-error{{/if}}">
+                <!-- END: Twitter client_id -->
+                <!-- START: Twitter Client Secret -->
+                <div class="form-group{{#if errors.service.twitter.client_secret}} has-error{{/if}}">
                     <label class="control-label">{{_ 'Twitter Secret'}}</label>
                     <div>
                         <input
                             autocomplete="off"
                             class="form-control"
-                            name="service[twitter][secret]"
+                            name="service[twitter][client_secret]"
                             type="text"
-                            value="{{item.service.twitter.secret}}"
+                            value="{{item.service.twitter.client_secret}}"
                         />
 
-                        {{#if errors.service.twitter.secret}}
-                            <span class="help-text">{{errors.service.twitter.secret}}</span>
+                        {{#if errors.service.twitter.client_secret}}
+                            <span class="help-text">{{errors.service.twitter.client_secret}}</span>
                         {{/if}}
                     </div>
                 </div>
-                <!-- END: Twitter secret -->
+                <!-- END: Twitter client_secret -->
+                
+                 <!-- START: Twitter URL Redirect -->
+                <div class="hidden">
+                    <label class="control-label">{{_ 'Twitter URL Redirect'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[twitter][url_redirect]"
+                            type="text"
+                            value="
+                            {{~#if item.service.twitter.url_redirect~}}
+                                {{~item.service.twitter.url_redirect~}}
+                            {{~else~}}
+                                http://localhost:8888/auth/login/sso/twitter
+                            {{~/if~}}
+                            "
+                        />
+
+                        {{#if errors.service.twitter.url_redirect}}
+                            <span class="help-text">{{errors.service.twitter.url_redirect}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Twitter URL Redirect -->
+                
+                <!-- START: Twitter URL Request -->
+                <div class="hidden">
+                    <label class="control-label">{{_ 'Twitter URL Request'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[twitter][url_request]"
+                            type="text"
+                            value="
+                            {{~#if item.service.twitter.url_request~}}
+                                {{~item.service.twitter.url_request~}}
+                            {{~else~}}
+                                https://api.twitter.com/oauth/request_token
+                            {{~/if~}}
+                            "
+                        />
+
+                        {{#if errors.service.twitter.url_request}}
+                            <span class="help-text">{{errors.service.twitter.url_request}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Twitter URL Request -->
+
+                <!-- START: Twitter URL Authorize -->
+                <div class="hidden">
+                    <label class="control-label">{{_ 'Twitter URL Authorize'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[twitter][url_authorize]"
+                            type="text"
+                            value="
+                            {{~#if item.service.twitter.url_authorize~}}
+                                {{~item.service.twitter.url_authorize~}}
+                            {{~else~}}
+                                https://api.twitter.com/oauth/authorize
+                            {{~/if~}}
+                            "
+                        />
+
+                        {{#if errors.service.twitter.url_authorize}}
+                            <span class="help-text">{{errors.service.twitter.url_authorize}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Twitter URL Authorize -->
+    
+                <!-- START: Twitter URL Access Token -->
+                <div class="hidden">
+                    <label class="control-label">{{_ 'Twitter URL Access Token'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[twitter][url_access_token]"
+                            type="text"
+                            value="
+                            {{~#if item.service.twitter.url_access_token~}}
+                                {{~item.service.twitter.url_access_token~}}
+                            {{~else~}}
+                               https://api.twitter.com/oauth/access_token
+                            {{~/if~}}
+                            "
+                        />
+
+                        {{#if errors.service.twitter.url_access_token}}
+                            <span class="help-text">{{errors.service.twitter.url_access_token}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Twitter URL Access Token -->
+
+                <!-- START: Twitter Url Resource -->
+                <div class="hidden">
+                    <label class="control-label">{{_ 'Twitter Url Resource'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[twitter][url_resource]"
+                            type="text"
+                            value="
+                            {{~#if item.service.twitter.url_resource~}}
+                                {{~item.service.twitter.url_resource~}}
+                            {{~else~}}
+                                https://api.twitter.com/1.1/account/verify_credentials.json
+                            {{~/if~}}
+                            "
+                        />
+
+                        {{#if errors.service.twitter.url_resource}}
+                            <span class="help-text">{{errors.service.twitter.url_resource}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Twitter Url Resource -->
+                <!-- START: Twitter OAuth Type -->
+                <div class="hidden">
+                    <label class="control-label">{{_ 'Twitter OAuth Type'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[twitter][oauth_type]"
+                            type="text"
+                            value="
+                            {{~#if item.service.twitter.oauth_type~}}
+                                {{~item.service.twitter.oauth_type~}}
+                            {{~else~}}
+                                https://graph.twitter.com
+                            {{~/if~}}
+                            "
+                        />
+
+                        {{#if errors.service.twitter.oauth_type}}
+                            <span class="help-text">{{errors.service.twitter.oauth_type}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Twitter OAuth Type -->
                 <em>
                     {{#_ 'See: %s for more information on how to get these tokens.'}}
                         <a
