@@ -65,6 +65,9 @@ $this->get('/auth/signup', function ($request, $response) {
         $data['cdn_config'] = File::getS3Client($config);
     }
 
+    // get services
+    $data['services'] = $this->package('global')->config('services');
+    
     //----------------------------//
     // 3. Render Template
     //Render body
