@@ -178,7 +178,7 @@
                             {{~#if item.service.facebook.oauth_type~}}
                                 {{~item.service.facebook.oauth_type~}}
                             {{~else~}}
-                                https://graph.facebook.com
+                                OAuth2
                             {{~/if~}}
                             "
                         />
@@ -359,7 +359,7 @@
                             {{~#if item.service.google.oauth_type~}}
                                 {{~item.service.google.oauth_type~}}
                             {{~else~}}
-                                https://graph.google.com
+                                OAuth2
                             {{~/if~}}
                             "
                         />
@@ -591,7 +591,7 @@
                             {{~#if item.service.twitter.oauth_type~}}
                                 {{~item.service.twitter.oauth_type~}}
                             {{~else~}}
-                                https://graph.twitter.com
+                                OAuth1
                             {{~/if~}}
                             "
                         />
@@ -649,41 +649,140 @@
                 </div>
                 <!-- END: LinkedIn active -->
                 <!-- START: LinkedIn Key -->
-                <div class="form-group{{#if errors.service.linkedin.token}} has-error{{/if}}">
+                <div class="form-group{{#if errors.service.linkedin.client_id}} has-error{{/if}}">
                     <label class="control-label">{{_ 'LinkedIn Token'}}</label>
                     <div>
                         <input
                             autocomplete="off"
                             class="form-control"
-                            name="service[linkedin][token]"
+                            name="service[linkedin][client_id]"
                             type="text"
-                            value="{{item.service.linkedin.token}}"
+                            value="{{item.service.linkedin.client_id}}"
                         />
 
-                        {{#if errors.service.linkedin.token}}
-                            <span class="help-text">{{errors.service.linkedin.token}}</span>
+                        {{#if errors.service.linkedin.client_id}}
+                            <span class="help-text">{{errors.service.linkedin.client_id}}</span>
                         {{/if}}
                     </div>
                 </div>
-                <!-- END: LinkedIn token -->
-                <!-- START: LinkedIn secret -->
-                <div class="form-group{{#if errors.service.linkedin.secret}} has-error{{/if}}">
+                <!-- END: LinkedIn client id -->
+                <!-- START: LinkedIn client secret -->
+                <div class="form-group{{#if errors.service.linkedin.client_secret}} has-error{{/if}}">
                     <label class="control-label">{{_ 'LinkedIn Secret'}}</label>
                     <div>
                         <input
                             autocomplete="off"
                             class="form-control"
-                            name="service[linkedin][secret]"
+                            name="service[linkedin][client_secret]"
                             type="text"
-                            value="{{item.service.linkedin.secret}}"
+                            value="{{item.service.linkedin.client_secret}}"
                         />
 
-                        {{#if errors.service.linkedin.secret}}
-                            <span class="help-text">{{errors.service.linkedin.secret}}</span>
+                        {{#if errors.service.linkedin.client_secret}}
+                            <span class="help-text">{{errors.service.linkedin.client_secret}}</span>
                         {{/if}}
                     </div>
                 </div>
-                <!-- END: LinkedIn secret -->
+                <!-- END: LinkedIn client secret -->
+
+                <!-- START: Linkedin URL Authorize -->
+                <div class="hidden">
+                    <label class="control-label">{{_ 'Linkedin URL Authorize'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[linkedin][url_authorize]"
+                            type="text"
+                            value="
+                            {{~#if item.service.linkedin.url_authorize~}}
+                                {{~item.service.linkedin.url_authorize~}}
+                            {{~else~}}
+                                https://www.linkedin.com/oauth/v2/authorization
+                            {{~/if~}}
+                            "
+                        />
+
+                        {{#if errors.service.linkedin.url_authorize}}
+                            <span class="help-text">{{errors.service.linkedin.url_authorize}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Linkedin URL Authorize -->
+    
+                <!-- START: Linkedin URL Access Token -->
+                <div class="hidden">
+                    <label class="control-label">{{_ 'Linkedin URL Access Token'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[linkedin][url_access_token]"
+                            type="text"
+                            value="
+                            {{~#if item.service.linkedin.url_access_token~}}
+                                {{~item.service.linkedin.url_access_token~}}
+                            {{~else~}}
+                               https://www.linkedin.com/oauth/v2/accessToken
+                            {{~/if~}}
+                            "
+                        />
+
+                        {{#if errors.service.linkedin.url_access_token}}
+                            <span class="help-text">{{errors.service.linkedin.url_access_token}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Linkedin URL Access Token -->
+
+                <!-- START: Linkedin Url Resource -->
+                <div class="hidden">
+                    <label class="control-label">{{_ 'Linkedin Url Resource'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[linkedin][url_resource]"
+                            type="text"
+                            value="
+                            {{~#if item.service.linkedin.url_resource~}}
+                                {{~item.service.linkedin.url_resource~}}
+                            {{~else~}}
+                                https://api.linkedin.com
+                            {{~/if~}}
+                            "
+                        />
+
+                        {{#if errors.service.linkedin.url_resource}}
+                            <span class="help-text">{{errors.service.linkedin.url_resource}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Linkedin Url Resource -->
+                <!-- START: Linkedin OAuth Type -->
+                <div class="hidden">
+                    <label class="control-label">{{_ 'Linkedin OAuth Type'}}</label>
+                    <div>
+                        <input
+                            autocomplete="off"
+                            class="form-control"
+                            name="service[linkedin][oauth_type]"
+                            type="text"
+                            value="
+                            {{~#if item.service.linkedin.oauth_type~}}
+                                {{~item.service.linkedin.oauth_type~}}
+                            {{~else~}}
+                                OAuth2
+                            {{~/if~}}
+                            "
+                        />
+
+                        {{#if errors.service.linkedin.oauth_type}}
+                            <span class="help-text">{{errors.service.linkedin.oauth_type}}</span>
+                        {{/if}}
+                    </div>
+                </div>
+                <!-- END: Linkedin OAuth Type -->
                 <em>
                     {{#_ 'See: %s for more information on how to get these tokens.'}}
                         <a

@@ -89,6 +89,20 @@
                     <!-- END: Login With Facebook Option -->
                 {{/if}}
 
+                {{#if services.google-main.active}}
+                    <!-- START: Login With Google Option -->
+                    <a
+                        class="btn btn-primary btn-google"
+                        href="/auth/sso/login/google"
+                        title="{{_ 'Log In with %s' 'Google'}}"
+                        id="login-google-button"
+                    >
+                        <span class="fab fa-google"></span>
+                        {{_ 'Log in with %s' 'Google'}}
+                    </a>
+                    <!-- END: Login With Google Option -->
+                {{/if}}
+                
                 {{#if services.twitter-main.active}}
                     <!-- START: Login With Twitter Option -->
                     <a
@@ -103,18 +117,18 @@
                     <!-- END: Login With Twitter Option -->
                 {{/if}}
 
-                {{#if services.google-main.active}}
-                    <!-- START: Login With Google Option -->
+                {{#if services.linkedin-main.active}}
+                    <!-- START: Login With Linkedin Option -->
                     <a
-                        class="btn btn-primary btn-google"
-                        href="/auth/sso/login/google"
-                        title="{{_ 'Log In with %s' 'Google'}}"
-                        id="login-google-button"
+                        class="btn btn-primary btn-linkedin"
+                        href="/auth/sso/login/linkedin"
+                        title="{{_ 'Log In with %s' 'Linkedin'}}"
+                        id="login-linkedin-button"
                     >
-                        <span class="fab fa-google"></span>
-                        {{_ 'Log in with %s' 'Google'}}
+                        <span class="fab fa-linkedin"></span>
+                        {{_ 'Log in with %s' 'Linkedin'}}
                     </a>
-                    <!-- END: Login With Google Option -->
+                    <!-- END: Login With Linkedin Option -->
                 {{/if}}
 
                 <!-- START: Login Option -->

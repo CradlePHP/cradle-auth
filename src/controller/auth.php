@@ -31,6 +31,7 @@ $this->get('/auth/signup', function ($request, $response) {
     //----------------------------//
     // 2. Prepare Data
     //Prepare body
+    $global = $this->package('global');
     $data = ['item' => $request->getPost()];
 
     $authSchema = SystemSchema::i('auth');
@@ -61,12 +62,12 @@ $this->get('/auth/signup', function ($request, $response) {
         || !empty($data['profile_schema']['files'])
     ) {
         //add CDN
-        $config = $this->package('global')->service('s3-main');
+        $config = $global->service('s3-main');
         $data['cdn_config'] = File::getS3Client($config);
     }
 
     // get services
-    $data['services'] = $this->package('global')->config('services');
+    $data['services'] = $global->config('services');
     
     //----------------------------//
     // 3. Render Template
@@ -118,8 +119,9 @@ $this->get('/auth/signup', function ($request, $response) {
 $this->get('/auth/login', function ($request, $response) {
     //----------------------------//
     // 1. Prepare Data
+    $global = $this->package('global');
     // get home page
-    $home = $this->package('global')->config('settings', 'home');
+    $home = $global->config('settings', 'home');
 
     if (!$home) {
         $home = '/';
@@ -147,15 +149,13 @@ $this->get('/auth/login', function ($request, $response) {
     $this->trigger('csrf-load', $request, $response);
     $data['csrf'] = $response->getResults('csrf');
 
-
     if ($response->isError()) {
         $response->setFlash($response->getMessage(), 'error');
-
         $data['errors'] = $response->getValidation();
     }
 
     // get services
-    $data['services'] = $this->package('global')->config('services');
+    $data['services'] = $global->config('services');
 
     //----------------------------//
     // 2. Render Template
@@ -1197,7 +1197,7 @@ $cradle->get('/auth/sso/login/:service_type', function ($request, $response) {
     $config = $this->package('global')->config('services', $type. '-main');
 
     if (!$config) {
-        $this->package('global')->flash('Invalid Service. Try again!', 'error');
+        $this->package('global')->flash('Invalid Service. Try again', 'error');
         return $this->package('global')->redirect('/auth/login');
     }
 
@@ -1233,12 +1233,12 @@ $cradle->get('/auth/sso/login/:service_type', function ($request, $response) {
             || !isset($config['url_authorize'])
             || !isset($config['url_access_token'])
         ) {
-            $this->package('global')->flash('Invalid Service. Try again!', 'error');
+            $this->package('global')->flash('Invalid Service. Try again', 'error');
             return $this->package('global')->redirect('/auth/login');
         }
 
-        $params = [];
-        // get provider
+        $fields = [];
+        //get provider
         $provider = new OAuth1(
             $config['client_id'],    // The client ID assigned to you by the provider
             $config['client_secret'],   // The client password assigned to you by the provider
@@ -1266,7 +1266,7 @@ $cradle->get('/auth/sso/login/:service_type', function ($request, $response) {
             }
             // set custom parameters
             if ($type == 'twitter') {
-                 $params = [
+                 $fields = [
                     'include_email' => 'true',
                     'skip_status' => 'true',
                     'include_entities' => 'false'
@@ -1274,8 +1274,8 @@ $cradle->get('/auth/sso/login/:service_type', function ($request, $response) {
             }
            
             try {
-                // get resource
-                $user = $provider->get($config['url_resource'], $token, $params);
+                //get resource
+                $user = $provider->get($config['url_resource'], $token, $fields);
             } catch (Exception $e) {
                 // When Graph returns an error
                 cradle('global')->flash($e->getMessage(), 'error');
@@ -1287,7 +1287,7 @@ $cradle->get('/auth/sso/login/:service_type', function ($request, $response) {
             return cradle('global')->redirect($redirect);
         }
 
-    // process OAuth2 service
+    //process OAuth2 service
     } else if (strtolower($config['oauth_type']) == 'oauth2'){
         if (!isset($config['client_id']) 
             || !isset($config['client_secret'])
@@ -1295,11 +1295,11 @@ $cradle->get('/auth/sso/login/:service_type', function ($request, $response) {
             || !isset($config['url_access_token'])
             || !isset($config['url_resource'])
         ) {
-            $this->package('global')->flash('Invalid Service. Try again!', 'error');
+            $this->package('global')->flash('Invalid Service. Try again', 'error');
             return $this->package('global')->redirect('/auth/login');
         }
 
-        // get provider
+        //get provider
         $provider = new OAuth2(
             $config['client_id'],    // The client ID assigned to you by the provider
             $config['client_secret'],   // The client password assigned to you by the provider
@@ -1309,16 +1309,46 @@ $cradle->get('/auth/sso/login/:service_type', function ($request, $response) {
             $config['url_resource']
         );
 
+        //Oauth Documentation
+        //Facebook (OAuth2): https://developers.facebook.com/docs
+        //Google (OAuth2): https://developers.google.com/identity/protocols/OAuth2 
+        //Twitter (OAuth1): https://developer.twitter.com/en/docs 
+        //Linkedin (OAuth2): https://developer.linkedin.com/docs 
+
+        //Facebook|Google custom
+        if ($type === 'facebook'
+            || $type === 'google'
+        ) {
+            $scope = 'email';
+            $resourceUrl = '/me';
+            $fields = [
+                'fields' => 'id,name,email'
+            ];
+        }
+
+        //Linkedin custom
+        if ($type === 'linkedin') {
+            $scope = ['r_basicprofile', 'r_emailaddress'];
+            $resourceUrl = '/v1/people/~:(id,firstName,lastName,emailAddress)';
+            $fields = [
+                'format' => 'json',
+            ];
+        }
+
         //if there is not a code
         if (!$request->hasStage('code')) {
             if ($request->hasGet('redirect_uri')) {
                 $request->setSession('redirect_uri', $request->getGet('redirect_uri'));
             }
 
-            // set scope
-            $provider->setScope('email');
+            //set scope
+            if (is_array($scope)){
+                $provider->setScope(...$scope);
+            } else {
+                $provider->setScope($scope);
+            }
            
-           // get redirect url
+            //get redirect url
             $redirect = $provider->getLoginUrl();
 
             //redirect
@@ -1341,25 +1371,52 @@ $cradle->get('/auth/sso/login/:service_type', function ($request, $response) {
 
         $token = (string) $accessToken['access_token'];
 
-        // set fields
-        $fields = [
-            'fields' => 'id,name,email'
-        ];
+        //Facebook|Google custom access token field
+        if ($type === 'facebook' 
+            || $type === 'google'
+        ) {
+            $fields['access_token'] = $token;
+        }
 
-        // Now you can redirect to another page and use the
-        // access token from $token
+        //Linkedin custom access token field
+        if ($type === 'linkedin') {
+            $fields['oauth2_access_token'] = $token;
+        }
+
+        //Now you can get user info
+        //access token from $token
         try {
-            $user = $provider->get('/me', $token, $fields);
+            $user = $provider->get($resourceUrl, $fields);
         } catch (Exception $e) {
             cradle('global')->flash($e->getMessage(), 'error');
             return $this->package('global')->redirect('/auth/login');
         }
+
+        //prepare user info
+        if ($user) {
+            //Linkedin custom
+            if ($type === 'linkedin') {
+                $user = [
+                    'id' => $user['id'],
+                    'name' => $user['firstName']. ' ' .$user['lastName'],
+                    'email' => $user['emailAddress']
+                ];
+            }
+        }
+    }
+
+    //validate user info
+    if (!isset($user['id'])
+        || !isset($user['name'])
+        || !isset($user['email'])
+    ) {
+        cradle('global')->flash('Invalid User data.', 'error');
+        return $this->package('global')->redirect('/auth/login');
     }
 
     //set some defaults
     $request->setStage('profile_email', $user['email']);
     $request->setStage('profile_name', $user['name']);
-
     $request->setStage('auth_tokens', [$type .'_token' => $token]);
     $request->setStage('auth_slug', $user['email']);
     $request->setStage('auth_password', $user['id']);
