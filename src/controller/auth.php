@@ -9,6 +9,7 @@
 
 use Cradle\Package\System\Schema as SystemSchema;
 use Cradle\Module\Utility\File;
+use Cradle\OAuth\OAuth2;
 
 /**
  * Render the Signup Page
@@ -1138,7 +1139,7 @@ $this->post('/auth/verify', function ($request, $response) {
  * @param Request $request
  * @param Response $response
  */
-$cradle->get('/auth/activate/:auth_id/:hash', function ($request, $response) {
+$this->get('/auth/activate/:auth_id/:hash', function ($request, $response) {
     //get the detail
     $this->trigger('auth-detail', $request, $response);
 
@@ -1174,4 +1175,141 @@ $cradle->get('/auth/activate/:auth_id/:hash', function ($request, $response) {
 
     //redirect
     $this->package('global')->redirect('/auth/login');
+});
+
+/**
+ * Process an OAuth2 Login
+ *
+ * @param Request $request
+ * @param Response $response
+ */
+$this->get('/auth/sso/login/oauth2/:name', function ($request, $response) {
+    //get the global package
+    $global = $this->package('global');
+    $name = $request->getStage('name');
+    // get config
+    $config = $global->config('services', 'oauth2-' . $name);
+
+    if (!$config
+        || !isset($config['client_id'])
+        || !isset($config['client_secret'])
+        || !isset($config['url_authorize'])
+        || !isset($config['url_access_token'])
+        || !isset($config['url_resource'])
+        || !$config['active']
+    ) {
+        $global->flash('Invalid Service. Try again', 'error');
+        return $global->redirect('/');
+    }
+
+    $protocol = 'http';
+    if ($request->getServer('HTTP_CF_VISITOR')) {
+        $pos = strpos($request->getServer('HTTP_CF_VISITOR'), 'https');
+        if ($pos !== false) {
+            $protocol = 'https';
+        }
+    }
+
+    //host
+    $host = $protocol . '://' . $request->getServer('HTTP_HOST');
+
+    //get provider
+    $provider = new OAuth2(
+        $config['client_id'],    // The client ID assigned to you by the provider
+        $config['client_secret'],   // The client password assigned to you by the provider
+        $host . '/auth/sso/login/oauth2/'. $name,
+        $config['url_authorize'],
+        $config['url_access_token'],
+        $config['url_resource']
+    );
+
+    //if there is not a code
+    if (!$request->hasStage('code')) {
+        if ($request->hasGet('redirect_uri')) {
+            $request->setSession('redirect_uri', $request->getGet('redirect_uri'));
+        }
+
+        if (isset($config['scope'])) {
+            //set scope
+            if (!is_array($config['scope'])){
+                $config['scope'] = [ $config['scope'] ];
+
+            }
+
+            $scope = $config['scope'];
+            $provider->setScope(...$scope);
+        }
+
+        //get redirect url
+        $redirect = $provider->getLoginUrl();
+        //redirect
+        return $global->redirect($redirect);
+    }
+
+    //there's a code
+    try {
+        $accessToken = $provider->getAccessTokens($request->getStage('code'));
+    } catch (Exception $e) {
+        // When Graph returns an error
+        $global->flash($e->getMessage(), 'error');
+        return $global->redirect('/');
+    }
+
+    if (isset($accessToken['error']) && $accessToken['error']) {
+        $global->flash('Access Token Error', 'error');
+        return $global->redirect('/');
+    }
+
+    if (!isset($accessToken['access_token'])
+        || !isset($accessToken['access_secret'])
+    ) {
+        $global->flash('Access Token Error', 'error');
+        return $global->redirect('/');
+    }
+
+    $token = $accessToken['access_token'];
+    $secret = $accessToken['access_secret'];
+
+    //Now you can get user info
+    //access token from $token
+    try {
+        $user = $provider->get([ 'access_token' => $token ]);
+    } catch (Exception $e) {
+        $global->flash($e->getMessage(), 'error');
+        return $global->redirect('/');
+    }
+
+    if (isset($user['error']) && $user['error']) {
+        $global->flash('Resource Request Error', 'error');
+        return $global->redirect('/');
+    }
+
+    //set some defaults
+    $request->setStage('profile_email', $user['email']);
+    $request->setStage('profile_name', $user['name']);
+    $request->setStage('auth_slug', $user['email']);
+    $request->setStage('auth_password', $user['id']);
+    $request->setStage('auth_active', 1);
+    $request->setStage('confirm', $user['id']);
+
+    $this->trigger('auth-sso-login', $request, $response);
+
+    if ($response->isError()) {
+        $global->flash($response->getMessage(), 'error');
+        return $global->redirect('/');
+    }
+
+    //it was good
+    //store to session
+    $_SESSION['me'] = $response->getResults();
+    $_SESSION['me']['access_token'] = $token;
+    $_SESSION['me']['access_secret'] = $secret;
+
+    //redirect
+    $redirect = '/';
+    if ($request->hasGet('redirect_uri')) {
+        $redirect = $request->getGet('redirect_uri');
+    }
+
+    return $global->redirect($redirect);
 });

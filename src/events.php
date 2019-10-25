@@ -241,65 +241,6 @@ $this->on('auth-forgot-mail', function ($request, $response) {
 });
 
 /**
- * Removes a auth
- *
- * @param Request $request
- * @param Response $response
- */
-$this->on('auth-remove', function ($request, $response) {
-    // set auth as schema
-    $request->setStage('schema', 'auth');
-    // trigger model create
-    $this->trigger('system-model-remove', $request, $response);
-});
-
-/**
- * Restores a auth
- *
- * @param Request $request
- * @param Response $response
- */
-$this->on('auth-restore', function ($request, $response) {
-    // set auth as schema
-    $request->setStage('schema', 'auth');
-    // trigger model create
-    $this->trigger('system-model-restore', $request, $response);
-});
-
-/**
- * Searches auth
- *
- * @param Request $request
- * @param Response $response
- */
-$this->on('auth-search', function ($request, $response) {
-    //set auth as schema
-    $request->setStage('schema', 'auth');
-
-    //trigger model search
-    $this->trigger('system-model-search', $request, $response);
-});
-
-/**
- * Updates a auth
- *
- * @param Request $request
- * @param Response $response
- */
-$this->on('auth-update', function ($request, $response) {
-    //set auth as schema
-    $request->setStage('schema', 'auth');
-
-    //trigger model search
-    $this->trigger('system-model-update', $request, $response);
-
-    //remove password, confirm
-    $response
-        ->removeResults('auth_password')
-        ->removeResults('confirm');
-});
-
-/**
  * Auth Login Job
  *
  * @param Request $request
@@ -366,6 +307,103 @@ $this->on('auth-recover', function ($request, $response) {
 
     //return response format
     $response->setError(false);
+
+    //remove password, confirm
+    $response
+        ->removeResults('auth_password')
+        ->removeResults('confirm');
+});
+
+/**
+ * Removes a auth
+ *
+ * @param Request $request
+ * @param Response $response
+ */
+$this->on('auth-remove', function ($request, $response) {
+    // set auth as schema
+    $request->setStage('schema', 'auth');
+    // trigger model create
+    $this->trigger('system-model-remove', $request, $response);
+});
+
+/**
+ * Restores a auth
+ *
+ * @param Request $request
+ * @param Response $response
+ */
+$this->on('auth-restore', function ($request, $response) {
+    // set auth as schema
+    $request->setStage('schema', 'auth');
+    // trigger model create
+    $this->trigger('system-model-restore', $request, $response);
+});
+
+/**
+ * Searches auth
+ *
+ * @param Request $request
+ * @param Response $response
+ */
+$this->on('auth-search', function ($request, $response) {
+    //set auth as schema
+    $request->setStage('schema', 'auth');
+
+    //trigger model search
+    $this->trigger('system-model-search', $request, $response);
+});
+
+/**
+ * Auth SSO Login Job
+ *
+ * @param Request $request
+ * @param Response $response
+ */
+$this->on('auth-sso-login', function ($request, $response) {
+    //get data
+    $data = [];
+    if ($request->hasStage()) {
+        $data = $request->getStage();
+    }
+
+    //load up the detail
+    $this->trigger('auth-detail', $request, $response);
+    if ($request->getStage('profile') && !$response->isError()) {
+        return $response->setError(true);
+    }
+
+    //if there's an error
+    if ($response->isError()) {
+        //they don't exist
+        $this->trigger('auth-create', $request, $response);
+    }
+
+    $response->setError(false)->remove('json', 'message');
+
+    // if auth is not active yet, update
+    if (!$response->getResults('auth_active')) {
+        $request->setStage('auth_active', 1);
+        $request->setStage('auth_id', $response->getResults('auth_id'));
+        $this->trigger('auth-update', $request, $response);
+    }
+
+    //load up the detail
+    $this->trigger('auth-detail', $request, $response);
+});
+
+/**
+ * Updates a auth
+ *
+ * @param Request $request
+ * @param Response $response
+ */
+$this->on('auth-update', function ($request, $response) {
+    //set auth as schema
+    $request->setStage('schema', 'auth');
+
+    //trigger model search
+    $this->trigger('system-model-update', $request, $response);
 
     //remove password, confirm
     $response
