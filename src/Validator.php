@@ -71,6 +71,29 @@ class Validator
             $errors['auth_slug'] = 'Cannot be empty';
         }
 
+        // if there's a slug and it's not specified
+        // to allow forgot password for inactive accounts
+        if (isset($data['auth_slug']) && !empty($data['auth_slug'])
+            && (!isset($data['allow_inactive']) || empty($data['allow_inactive'])
+                || ((isset($data['allow_inactive']) && !$data['allow_inactive'])))
+        ) {
+            $resource = Schema::i('auth')
+                ->model()
+                ->service('sql')
+                ->getResource();
+
+            // check if exists
+            $row = $resource
+                ->search('auth')
+                ->addFilter('auth_slug = %s', $data['auth_slug'])
+                ->getRow();
+
+            if (isset($row['auth_active']) && !$row['auth_active']) {
+                $errors['auth_slug'] = 'Account is already deactivated. If you
+                    believe this is an error, you may contact admin.';
+            }
+        }
+
         return $errors;
     }
 
