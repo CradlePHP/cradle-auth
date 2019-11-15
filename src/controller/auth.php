@@ -1291,6 +1291,8 @@ $this->get('/auth/sso/login/oauth2/:name', function ($request, $response) {
     $request->setStage('auth_password', $user['id']);
     $request->setStage('auth_active', 1);
     $request->setStage('confirm', $user['id']);
+    //there might be more information
+    $request->setStage('resource', $user);
 
     $this->trigger('auth-sso-login', $request, $response);
 
