@@ -1212,12 +1212,13 @@ $this->get('/auth/sso/login/oauth2/:name', function ($request, $response) {
 
     //host
     $host = $protocol . '://' . $request->getServer('HTTP_HOST');
+    $path = $request->get('server', 'REQUEST_URI');
 
     //get provider
     $provider = new OAuth2(
         $config['client_id'],    // The client ID assigned to you by the provider
         $config['client_secret'],   // The client password assigned to you by the provider
-        $host . '/auth/sso/login/oauth2/'. $name,
+        $host . $path,
         $config['url_authorize'],
         $config['url_access_token'],
         $config['url_resource']
