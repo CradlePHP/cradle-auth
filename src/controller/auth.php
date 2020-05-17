@@ -407,8 +407,15 @@ $this->get('/auth/recover/:auth_id/:hash', function ($request, $response) {
     // 1. Security Checks
     //----------------------------//
     // 2. Prepare Data
-    //get the detail
-    $this->trigger('auth-detail', $request, $response);
+    if (!$response->isError()) {
+        //get the detail
+        $this->trigger('auth-detail', $request, $response);
+
+        if ($response->isError()) {
+            $response->setFlash($response->getMessage(), 'error');
+            return $this->package('global')->redirect('/auth/forgot');
+        }
+    }
 
     //form hash
     $authId = $response->getResults('auth_id');
@@ -418,7 +425,7 @@ $this->get('/auth/recover/:auth_id/:hash', function ($request, $response) {
     //check the verification hash
     if ($hash !== $request->getStage('hash')) {
         $this->package('global')->flash('Invalid verification. Try again.', 'error');
-        return $this->package('global')->redirect('/auth/verify');
+        return $this->package('global')->redirect('/auth/forgot');
     }
 
     //Prepare body
@@ -849,6 +856,18 @@ $this->post('/auth/forgot', function ($request, $response) {
 $this->post('/auth/recover/:auth_id/:hash', function ($request, $response) {
     //----------------------------//
     // 1. Setup Overrides
+    //----------------------------//
+    // 2. Security Checks
+    //get the detail
+    $this->trigger('auth-detail', $request, $response);
+
+    if ($response->isError()) {
+        $response->setFlash($response->getMessage(), 'error');
+        return $this->package('global')->redirect('/auth/forgot');
+    }
+
+    //----------------------------//
+    // 3. Prepare Data
     //form hash
     $authId = $response->getResults('auth_id');
     $authUpdated = $response->getResults('auth_updated');
@@ -856,6 +875,7 @@ $this->post('/auth/recover/:auth_id/:hash', function ($request, $response) {
 
     //determine route
     $route = sprintf('/auth/recover/%s/%s', $authId, $hash);
+
     if ($request->hasStage('route')) {
         $route = $request->getStage('route');
     }
@@ -865,18 +885,6 @@ $this->post('/auth/recover/:auth_id/:hash', function ($request, $response) {
     if ($request->hasGet('redirect_uri')) {
         $redirect = $request->getGet('redirect_uri');
     }
-
-    //----------------------------//
-    // 2. Security Checks
-    //----------------------------//
-    // 3. Prepare Data
-    //get the detail
-    $this->trigger('auth-detail', $request, $response);
-
-    //form hash
-    $authId = $response->getResults('auth_id');
-    $authUpdated = $response->getResults('auth_updated');
-    $hash = md5($authId.$authUpdated);
 
     //check the recovery hash
     if ($hash !== $request->getStage('hash')) {
