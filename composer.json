@@ -23,7 +23,7 @@
         "cradlephp/cradle-profile": "~2.2.0",
         "cradlephp/cradle-captcha": "~2.2.0",
         "cradlephp/cradle-queue": "~2.2.0",
-        "swiftmailer/swiftmailer": "5.4.3"
+        "swiftmailer/swiftmailer": "~5.4.12"
     },
     "autoload": {
         "psr-4": {
