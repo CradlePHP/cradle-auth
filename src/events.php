@@ -376,7 +376,8 @@ $this->on('auth-sso-login', function ($request, $response) {
     //if there's an error
     if ($response->isError()) {
         //they don't exist
-        $this->trigger('auth-create', $request, $response);
+        $auth = $this->method('auth-create', $request);
+        $response->setResults($auth);
     }
 
     $response->setError(false)->remove('json', 'message');
